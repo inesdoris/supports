@@ -1,0 +1,150 @@
+{%extends 'base.html'%}
+{% load static %}
+
+{%block title%}
+Ajout utilisateur
+{%endblock%}
+{%block main%}
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Ajouter un utilisateur</h5>
+
+    <!-- Ajouter un utilisateur -->
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row mb-3">
+        <label for="inputText" class="col-sm-2 col-form-label">Username</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="username" required readonly value="{{u.login}}">
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="inputPassword" class="col-sm-2 col-form-label">Mot de passe</label>
+        <div class="col-sm-10">
+          <input type="password" class="form-control" name="password" required value="{{u.true_pass}}">
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="inputText" class="col-sm-2 col-form-label">Nom</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="nom" required value="{{u.nom}}">
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="inputText" class="col-sm-2 col-form-label" >Prénoms</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="prenom" required value="{{u.prenom}}">
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="inputText" class="col-sm-2 col-form-label" >Email</label>
+        <div class="col-sm-10">
+          <input type="email" class="form-control" name="email" required value="{{u.email}}">
+        </div>
+      </div>
+      <fieldset class="row mb-3">
+        <legend class="col-form-label col-sm-2 pt-0">Sexe</legend>
+        <div class="col-sm-10">
+            {%if u.sexe%}
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="sexe" id="gridRadios1" value="1" checked>
+            <label class="form-check-label" for="gridRadios1">
+              M
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="sexe" id="gridRadios2" value="0">
+            <label class="form-check-label" for="gridRadios2">
+              F
+            </label>
+          </div>
+          {%else%}
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="sexe" id="gridRadios1" value="1">
+            <label class="form-check-label" for="gridRadios1">
+              M
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="sexe" id="gridRadios2" value="0" checked>
+            <label class="form-check-label" for="gridRadios2">
+              F
+            </label>
+          </div>
+          {%endif%}
+        </div>
+      </fieldset>
+      <div class="row mb-3">
+        <label for="inputText" class="col-sm-2 col-form-label" >Adresse</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="adresse" required value="{{u.adresse}}">
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="inputNumber" class="col-sm-2 col-form-label">Contact</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="contact" required value="{{u.contact}}">
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="inputNumber" class="col-sm-2 col-form-label">Image</label>
+        <div class="col-sm-10">
+          <input class="form-control" type="file" id="formFile" name="image">
+        </div>
+      </div>
+      
+      <div class="row mb-3">
+        <label for="inputText" class="col-sm-2 col-form-label">Profil</label>
+        <div class="col-sm-10">
+          <select class="form-select" aria-label="Default select example" name="profil" required>
+            <option value="">Sélectionnez un profil</option>
+            {%for profil in profils %}
+                {%if u.profil.id == profil.id %}
+                <option value="{{profil.id}}" selected>{{profil.libelle}}</option>
+                {%else%}
+                <option value="{{profil.id}}">{{profil.libelle}}</option>
+                {%endif%}
+            {%endfor%}
+          </select>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label for="inputText" class="col-sm-2 col-form-label">Agence</label>
+        <div class="col-sm-10">
+          <select class="form-select" aria-label="Default select example" name="agence" required>
+            <option value="">Sélectionnez une agence</option>
+            {%for agence in agences %}
+                {%if u.agence.id == agence.id%}
+                <option value="{{agence.id}}" selected>{{agence.nom}}</option>
+                {%else%}
+                <option value="{{agence.id}}">{{agence.nom}}</option>
+                {%endif%}
+            {%endfor%}
+          </select>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Section</label>
+        <div class="col-sm-10">
+          <select class="form-select" aria-label="Default select example" name="section">
+            <option value="">Sélectionnez une section</option>
+            {%for section in sections %}
+                {%if u.section.id == section.id%}
+                <option value="{{section.id}}" selected>{{section.nom}}</option>
+                {%else%}
+                <option value="{{section.id}}">{{section.nom}}</option>
+                {%endif%}
+            {%endfor%}
+          </select>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <!--<label class="col-sm-2 col-form-label">Submit Button</label>-->
+        <div class="col-sm-10">
+          <button type="submit" class="btn btn-primary">Modifier</button>
+        </div>
+      </div>       
+    </form>
+  </div>
+</div>
+{%endblock%}

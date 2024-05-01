@@ -1,0 +1,12 @@
+body{
+    background-color: antiquewhite;
+    font-family: cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.div-center {
+	display: flex;
+	justify-content: center;
+	align-items: center
+}

@@ -1,0 +1,41 @@
+{%extends 'base.html'%}
+{% load static %}
+
+{%block title%}
+Liste agence
+{%endblock%}
+{%block main%}
+    <div class="card p-3">
+    <div class="pagetitle">
+        <h1>Liste des agences</h1>
+      </div><!-- End Page Title -->
+
+    <table class="table datatable">
+        <thead>
+        <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            {%for a in agences %}
+            <tr>
+                <td>{{a.nom}} </td>
+                <td>
+                    <div class="text-end">
+                        <a href="/agence/{{a.id}}/modifier">
+                            <button type="button" class="btn btn-light"><i class="bi bi-pencil"></i></button>
+                        </a>
+                        <a href="#">
+                            <button type="button" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                        </a>
+                    </div>
+                    
+                </td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</div>
+  <!-- End Table with stripped rows -->
+{%endblock%}

@@ -1,0 +1,71 @@
+{%extends 'base.html'%}
+{% load static %}
+
+{%block title%}
+Liste utilisateur
+{%endblock%}
+{%block main%}
+<!-- Table with stripped rows -->
+      <div class="card p-3">
+        <div class="pagetitle">
+            <h1>Liste des utilisateurs</h1>
+          </div><!-- End Page Title -->
+        <table class="table datatable">
+            <thead>
+            <tr>
+                <th scope="col">Login</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Prénoms</th>
+                <th scope="col">Adresse</th>
+                <th scope="col">Contact</th>
+                <th scope="col">Agence</th>
+                <th scope="col">Profil</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+                {%for u in utilisateurs %}
+                <tr>
+                    <td>{{u.login}} </td>
+                    <td>{{u.nom}} </td>
+                    <td>{{u.prenom}} </td>
+                    <td>{{u.adresse}} </td>
+                    <td>{{u.contact}} </td>
+                    <td>{{u.agence.nom}} </td>
+                    <td>{{u.profil.libelle}} </td>
+                    <td>
+                        <div class="text-end">
+                            <a href="/utilisateur/{{u.id}}/modifier">
+                                <button type="button" class="btn btn-light"><i class="bi bi-pencil"></i></button>
+                            </a>
+                            
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUser{{u.id}}" {%if u.id == user.id %} disabled {%endif%}>
+                                <i class="bi bi-trash"></i>
+                            </button>
+                              <div class="modal fade" id="deleteUser{{u.id}}" tabindex="-1">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title">Suppression d'utilisateur</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      Êtes-vous sûr ?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="/utilisateur/{{u.id}}/supprimer"><button type="button" class="btn btn-danger">Oui</button></a>
+                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        </div>
+                        
+                    </td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+      </div>
+  <!-- End Table with stripped rows -->
+{%endblock%}
