@@ -11,10 +11,11 @@ def index(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     return render(request, 'index.html', {
-        "error":error,
-        "success":success,
-        "user":user,
+        "error": error,
+        "success": success,
+        "user": user,
     })
+
 
 def login(request):
     user_id = request.session.get('user_id', None)
@@ -38,12 +39,14 @@ def login(request):
             return redirect('/login')
     return render(request, 'login.html', {
         "error": error,
-        "success":success,
+        "success": success,
     })
+
 
 def logout(request):
     del request.session['user_id']
     return redirect('/')
+
 
 def profil(request):
     user_id = request.session.get('user_id', None)
@@ -51,7 +54,7 @@ def profil(request):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user =  Utilisateur.objects.get(id=user_id)
+    user = Utilisateur.objects.get(id=user_id)
     if request.POST:
         if "photo" in request.FILES:
             user.image = request.FILES["photo"]
@@ -76,13 +79,13 @@ def profil(request):
                 error = "Mot de passe actuel incorrect"
                 request.session["error"] = error
                 return redirect("/profil")
-                
+
     return render(request, 'profil.html', {
-        "user":user,
-        "error":error,
-        "success":success,
+        "user": user,
+        "error": error,
+        "success": success,
     })
-    
+
 
 def ajout_utilisateur(request):
     user_id = request.session.get('user_id', None)
@@ -90,10 +93,10 @@ def ajout_utilisateur(request):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user =  Utilisateur.objects.get(id=user_id)
-    profils=Profil.objects.all()
-    agences=Agence.objects.all()
-    sections=Section.objects.all()
+    user = Utilisateur.objects.get(id=user_id)
+    profils = Profil.objects.all()
+    agences = Agence.objects.all()
+    sections = Section.objects.all()
     if request.POST:
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -112,7 +115,8 @@ def ajout_utilisateur(request):
             error = "Ce nom d'utilisateur est déjà utilisé !!"
             request.session["error"] = error
             return redirect("/utilisateur/ajout")
-        u = Utilisateur(login=username, password=chiffrement(password), nom=nom, prenom=prenom, email=email, sexe=sexe, adresse=adresse, contact=contact,  
+        u = Utilisateur(login=username, password=chiffrement(password), nom=nom, prenom=prenom, email=email, sexe=sexe,
+                        adresse=adresse, contact=contact,
                         profil_id=int(profil), agence_id=int(agence), image=image)
         if section:
             u.section = Section.objects.get(id=int(section))
@@ -120,14 +124,15 @@ def ajout_utilisateur(request):
         request.session["success"] = "L'utilisateur a été enregistré avec succès !!"
         return redirect("/utilisateur/liste")
 
-    return render(request, "utilisateur/ajout.html",{
-        "error":error,
-        "success":success,
-        "user":user,
-        "profils":profils,
-        "agences":agences,
-        "sections":sections
+    return render(request, "utilisateur/ajout.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "profils": profils,
+        "agences": agences,
+        "sections": sections
     })
+
 
 def liste_utilisateur(request):
     user_id = request.session.get('user_id', None)
@@ -135,14 +140,15 @@ def liste_utilisateur(request):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user =  Utilisateur.objects.get(id=user_id)
+    user = Utilisateur.objects.get(id=user_id)
     utilisateurs = Utilisateur.objects.all()
-    return render(request, "utilisateur/liste.html",{
-        "error":error,
-        "success":success,
-        "user":user,
-        "utilisateurs":utilisateurs
+    return render(request, "utilisateur/liste.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "utilisateurs": utilisateurs
     })
+
 
 def modifier_utilisateur(request, id):
     user_id = request.session.get('user_id', None)
@@ -150,10 +156,10 @@ def modifier_utilisateur(request, id):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user =  Utilisateur.objects.get(id=user_id)
-    profils=Profil.objects.all()
-    agences=Agence.objects.all()
-    sections=Section.objects.all()
+    user = Utilisateur.objects.get(id=user_id)
+    profils = Profil.objects.all()
+    agences = Agence.objects.all()
+    sections = Section.objects.all()
     u = Utilisateur.objects.get(id=id)
     if request.POST:
         password = request.POST.get("password")
@@ -188,45 +194,48 @@ def modifier_utilisateur(request, id):
         u.save()
         request.session["success"] = "La modification s'est bien déroulée"
         return redirect("/utilisateur/liste")
-    return render(request, "utilisateur/modifier.html",{
-        "error":error,
-        "success":success,
-        "user":user,
-        "u":u,
-        "profils":profils,
-        "agences":agences,
-        "sections":sections
+    return render(request, "utilisateur/modifier.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "u": u,
+        "profils": profils,
+        "agences": agences,
+        "sections": sections
     })
+
 
 def supprimer_utilisateur(request, id):
     u = Utilisateur.objects.get(id=id)
     u.delete()
     request.session["success"] = "L'utilisateur a bien été supprimé !!"
     return redirect("/utilisateur/liste")
-    
+
+
 def ajout_agence(request):
     user_id = request.session.get('user_id', None)
     error = request.session.pop('error', None)
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user =  Agence.objects.get(id=user_id)
+    user = Agence.objects.get(id=user_id)
     if request.POST:
         nom = request.POST.get("nom")
         if Agence.objects.filter(nom=nom).exists():
             error = "Ce nom d'agence existe déjà !!"
             request.session["error"] = error
             return redirect("/agence/ajout")
-        a = Agence(nom=nom)    
+        a = Agence(nom=nom)
         a.save()
         request.session["success"] = "L'agence a été enregistrée avec succès !!"
         return redirect("/agence/liste")
 
-    return render(request, "agence/ajout.html",{
-        "error":error,
-        "success":success,
-        "user":user
+    return render(request, "agence/ajout.html", {
+        "error": error,
+        "success": success,
+        "user": user
     })
+
 
 def liste_agence(request):
     user_id = request.session.get('user_id', None)
@@ -234,14 +243,15 @@ def liste_agence(request):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user =  Agence.objects.get(id=user_id)
+    user = Agence.objects.get(id=user_id)
     agences = Agence.objects.all()
-    return render(request, "agence/liste.html",{
-        "error":error,
-        "success":success,
-        "user":user,
-        "agences":agences
+    return render(request, "agence/liste.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "agences": agences
     })
+
 
 def modifier_agence(request, id):
     user_id = request.session.get('user_id', None)
@@ -249,7 +259,7 @@ def modifier_agence(request, id):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user =  Agence.objects.get(id=user_id)
+    user = Agence.objects.get(id=user_id)
     a = Agence.objects.get(id=id)
     if request.POST:
         nom = request.POST.get("nom")
@@ -261,12 +271,13 @@ def modifier_agence(request, id):
         a.save()
         request.session["success"] = "La modification s'est bien déroulée"
         return redirect("/agence/liste")
-    return render(request, "agence/modifier.html",{
-        "error":error,
-        "success":success,
-        "user":user,
-        "a":a
+    return render(request, "agence/modifier.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "a": a
     })
+
 
 def supprimer_agence(request, id):
     user_id = request.session.get('user_id', None)
@@ -274,7 +285,7 @@ def supprimer_agence(request, id):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user =  Agence.objects.get(id=user_id)
+    user = Agence.objects.get(id=user_id)
     a = Agence.objects.get(id=id)
     if request.POST:
         nom = request.POST.get("nom")
@@ -288,12 +299,13 @@ def supprimer_agence(request, id):
         a.save()
         request.session["success"] = "La suppression s'est bien déroulée"
         return redirect("/agence/liste")
-    return render(request, "agence/supprimer.html",{
-        "error":error,
-        "success":success,
-        "user":user,
-        "a":a
+    return render(request, "agence/supprimer.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "a": a
     })
+
 
 def formulaire(request):
     user_id = request.session.get('user_id', None)
@@ -301,24 +313,25 @@ def formulaire(request):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user =  Utilisateur.objects.get(id=user_id)
-    demandeur=Utilisateur.objects.all()
-    service=Service.objects.all()
+    user = Utilisateur.objects.get(id=user_id)
+    demandeur = Utilisateur.objects.all()
+    service = Service.objects.all()
     if request.POST:
         description = request.POST.get("description")
         etat = request.POST.get("etat")
         demandeur = request.POST.get("demandeur")
         service = request.POST.get("service")
         date_formulation = request.POST.get("datef")
-        d = Demande(description=description, etat=etat, demandeur=demandeur, service=service, date_formulation=date_formulation)
+        d = Demande(description=description, etat=etat, demandeur=demandeur, service=service,
+                    date_formulation=date_formulation)
         d.save()
         request.session["success"] = "La demande a bien été envoyée !!"
         return redirect("/chef_agence/formulaire")
 
-    return render(request, "chef_agence/formulaire.html",{
-        "error":error,
-        "success":success,
-        "user":user,
-        "demandeur":demandeur,
-        "service":service
+    return render(request, "chef_agence/formulaire.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "demandeur": demandeur,
+        "service": service
     })
