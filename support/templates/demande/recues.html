@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends 'base.html' %}
 {% load static %}
 
@@ -41,3 +42,48 @@ Liste des demandes reçues
     </table>
 </div>
 {% endblock %}
+=======
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Liste des demandes reçues
+{% endblock %}
+{% block main %}
+<div class="card p-3">
+    <div class="pagetitle">
+        <h1>Liste des demandes reçues</h1>
+    </div>
+    <table class="table datatable">
+        <thead>
+        <tr>
+            <th scope="col">Description</th>
+            <th scope="col">État</th>
+            <th scope="col">Demandeur</th>
+            <th scope="col">Service</th>
+            <th scope="col">Agent</th> <!-- Ajout du titre Agent -->
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for d in demandes_recues %}
+            <tr>
+                <td>{{ d.description }}</td>
+                <td>{{ d.etat.libelle }}</td>
+                <td>{{ d.demandeur.prenom }} {{ d.demandeur.nom }}</td>
+                <td>{{ d.service.libelle }}</td>
+                <td>{% if d.agent %}{{ d.agent.prenom }} {{ d.agent.nom }}{% else %}Non affecté{% endif %}</td> <!-- Ajout de l'agent -->
+                <td>
+                    <div class="text-end">
+                        <a href="{% url 'affecter_agent' d.id %}">
+                            <button type="button" class="btn btn-light"><i class="bi bi-person-plus"></i>Affecter</button>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+>>>>>>> bfa885662b246bf6825714b3ab754268d09bc098

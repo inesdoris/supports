@@ -35,6 +35,7 @@ urlpatterns = [
     path('agent/solved', agent_views.solved, name='demandes-resolues'),
     path('agent/<int:id_demande>', agent_views.mettre_en_traitement, name='mettre-une-demande-en-cours-de-traitement'),
 <<<<<<< HEAD
+<<<<<<< HEAD
     path('agent/<int:id_demande>/categorize', agent_views.categoriser_demande, name='categoriser-une-demande'),
     path('agent/pending/<int:id_demande>', agent_views.traiter_demande, name='traiter-une-demande'),
     path('agent/solved/<int:id_demande>', agent_views.consulter_demande, name='consulter-une-demande'),
@@ -47,6 +48,11 @@ urlpatterns = [
     path('agent/admin/', agent_views.admin, name='messages-envoyees-a-l-admin'),
     path('agent/admin/<int:id_demande>', agent_views.notifier_admin, name='envoi-admin'),
 >>>>>>> dev_ange
+=======
+    path('agent/<int:id_demande>/categorize', agent_views.categoriser_demande, name='categoriser-une-demande'),
+    path('agent/pending/<int:id_demande>', agent_views.traiter_demande, name='traiter-une-demande'),
+    path('agent/solved/<int:id_demande>', agent_views.consulter_demande, name='consulter-une-demande'),
+>>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
     
     # views for admin
     path('demande/recues', views.liste_demandes_recues, name='liste_demandes_recues'),

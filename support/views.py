@@ -15,10 +15,15 @@ def index(request):
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
 <<<<<<< HEAD
+<<<<<<< HEAD
     if user.profil == Profil.objects.get(id=1):
         return redirect("/demande/recues")
 =======
 >>>>>>> dev_ange
+=======
+    if user.profil == Profil.objects.get(id=1):
+        return redirect("/demande/recues")
+>>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
     if user.profil == Profil.objects.get(id=2):
         return redirect("/agent")
     if user.profil == Profil.objects.get(id=3):
@@ -364,10 +369,13 @@ def formulaire(request):
             demandeur = user
             service = Service.objects.get(id=request.POST.get("service"))
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             service.categorie = None
             service.save()
 >>>>>>> dev_ange
+=======
+>>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
             date_formulation = timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone())
             d = Demande(description=description, etat=etat, demandeur=demandeur, service=service,
                         date_formulation=date_formulation)
@@ -493,9 +501,12 @@ def affecter_agent(request, demande_id):
         if form.is_valid():
             form.save()
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
             Notifications.objects.create(receiver=form.cleaned_data['agent'], message="Une nouvelle demande vous a été affectée")
 >>>>>>> dev_ange
+=======
+>>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
             return redirect('liste_demandes_recues')  
     else:
         form = AffectationAgentForm(instance=demande)
@@ -637,6 +648,7 @@ def notifications(request):
     nombre_nouvelles_notifications = nouvelles_notifications.count()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     return render(request, "notifications.html", {
 =======
     template_name = "notifications.html"
@@ -646,6 +658,9 @@ def notifications(request):
 
     return render(request, template_name, {
 >>>>>>> dev_ange
+=======
+    return render(request, "notifications.html", {
+>>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
         "error": error,
         "success": success,
         "user": user,
