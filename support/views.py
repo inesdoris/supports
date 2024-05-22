@@ -14,6 +14,8 @@ def index(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    if user.profil == Profil.objects.get(id=1):
+        return redirect("/demande/recues")
     if user.profil == Profil.objects.get(id=2):
         return redirect("/agent")
     if user.profil == Profil.objects.get(id=3):

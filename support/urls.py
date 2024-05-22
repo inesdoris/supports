@@ -4,7 +4,7 @@ from . import views
 from . import agent_views
 
 urlpatterns = [
-    path('', views.liste_demandes_recues, name='liste_demandes_recues'),
+    path('', views.index, name='index'),
     path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),
     path('profil', views.profil, name='profil'),
