@@ -46,7 +46,7 @@ class CategorieService(models.Model):
 
 class Service(models.Model):
     libelle = models.CharField(max_length=100)
-    categorie = models.ForeignKey(CategorieService, on_delete=models.CASCADE)
+    categorie = models.ForeignKey(CategorieService, on_delete=models.CASCADE, null=True, blank=False)
     
     def __str__(self):
         return f"{self.libelle}"

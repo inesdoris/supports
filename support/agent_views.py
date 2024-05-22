@@ -208,7 +208,7 @@ def notifier_admin(request, id_demande):
             raise("error")
         demande.etat = EtatDemande.objects.get_or_create(libelle="Approuvée")[0]
         demande.save()
-        Notifications.objects.create(receiver=Utilisateur.objects.filter(profil__id=1).first(), message=f"Une proposition de solution à l'une des demandes de {"M." if demande.demandeur.sexe else "Mme"} {demande.demandeur.nom} {demande.demandeur.prenom} vous a été envoyée par l'agent {user.nom} {user.prenom}.")
+        Notifications.objects.create(receiver=Utilisateur.objects.filter(profil__id=1).first(), message=f"Une proposition de solution à l'une des demandes de {'M.' if demande.demandeur.sexe else 'Mme'} {demande.demandeur.nom} {demande.demandeur.prenom} vous a été envoyée par l'agent {user.nom} {user.prenom}.")
         request.session["success"] = "La solution a été envoyée avec succès."
         return redirect("/agent/admin")
     except:

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {% extends 'base.html' %}
 {% load static %}
 
@@ -27,33 +26,3 @@ Modifier Demande
     </section>
 </main>
 {% endblock %}
-=======
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}
-Modifier Demande
-{% endblock %}
-
-{% block main %}
-<main>
-    <section style="width: 1000px">
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>Modifier Demande</h4>
-                        <form method="post">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-                            <a href="{% url 'consulter_demande' demande.id %}" class="btn btn-secondary">Annuler</a>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</main>
-{% endblock %}
->>>>>>> bfa885662b246bf6825714b3ab754268d09bc098

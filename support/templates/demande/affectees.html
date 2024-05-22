@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {%extends 'base.html'%}
 {% load static %}
 
@@ -35,42 +34,4 @@ Liste des demandes affectées
         </table>
       </div>
   <!-- End Table with stripped rows -->
-=======
-{%extends 'base.html'%}
-{% load static %}
-
-{%block title%}
-Liste des demandes affectées
-{%endblock%}
-{%block main%}
-<!-- Table with stripped rows -->
-      <div class="card p-3">
-        <div class="pagetitle">
-            <h1>Liste des demandes affectées</h1>
-          </div><!-- End Page Title -->
-        <table class="table datatable">
-            <thead>
-            <tr>
-                <th scope="col">Description</th>
-                <th scope="col">État </th>
-                <th scope="col">Demandeur</th>
-                <th scope="col">Service</th>
-                <th scope="col">Agent</th>
-            </tr>
-            </thead>
-            <tbody>
-                {%for d in demandes_affectees %}
-                <tr>
-                    <td>{{d.description}} </td>
-                    <td>{{d.etat.libelle}} </td>
-                    <td>{{d.demandeur}} </td>
-                    <td>{{d.service.libelle}} </td>
-                    <td>{{d.agent}} </td>
-                </tr>
-                {%endfor%}
-            </tbody>
-        </table>
-      </div>
-  <!-- End Table with stripped rows -->
->>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
 {%endblock%}
