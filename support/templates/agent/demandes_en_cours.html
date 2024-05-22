@@ -1,0 +1,82 @@
+{%extends 'agent/index.html'%}
+{% load static %}
+
+{%block title%}
+Demandes en cours
+{%endblock%}
+
+{% block main %}
+    <div class="pagetitle">
+      <h1>Accueil</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">Demandes en cours</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-12">
+          <div class="row">
+            <!-- Recent Sales -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+
+                <!-- <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li> -->
+                    <!-- Les demandes par catégorie de services -->
+                    <!-- {% for service in filtres %}
+                      <li><a class="dropdown-item" href="/agent">{{service}}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div> -->
+
+                <div class="card-body" style="margin-top: 10px;">
+                  <!-- <h5 class="card-title">{{type}} <span>| Today</span></h5> -->
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Détails</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Actions</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {% for demande in demandes %}
+                        <tr>
+                          <th scope="row"><a href="#">#{{demande.id}}</a></th>
+                          <td><a href="#" class="text-primary">
+                            {% if demande.demandeur.sexe %}
+                                <pre>Formulé par M. {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</pre>
+                            {% else %}
+                                <pre>Formulé par Mme {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</pre>
+                            {% endif %}
+                          </a></td>
+                            <td>{{demande.description}}</td>
+                            <td><a href="{% url 'traiter-une-demande' demande.id %}" class="text-primary"><button class="btn btn-warning">Traiter</button></a></td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+            </div><!-- End Recent Sales -->
+
+          </div>
+        </div><!-- End Left side columns -->
+
+      </div>
+    </section>
+    {%endblock%}
