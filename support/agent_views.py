@@ -5,7 +5,6 @@ def index(request):
     user_id = request.session.get('user_id', None)
     error = request.session.pop('error', None)
     success = request.session.pop('success', None)
-    categorieServices = list(map(lambda x: x.libelle, CategorieService.objects.all()))
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
@@ -16,7 +15,6 @@ def index(request):
         "error": error,
         "success": success,
         "demandes": demandes,
-        "filtres": categorieServices,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
@@ -24,7 +22,6 @@ def pending(request):
     user_id = request.session.get('user_id', None)
     error = request.session.pop('error', None)
     success = request.session.pop('success', None)
-    categorieServices = list(map(lambda x: x.libelle, CategorieService.objects.all()))
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
@@ -35,7 +32,6 @@ def pending(request):
         "error": error,
         "success": success,
         "demandes": demandes,
-        "filtres": categorieServices,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
@@ -43,7 +39,6 @@ def solved(request):
     user_id = request.session.get('user_id', None)
     error = request.session.pop('error', None)
     success = request.session.pop('success', None)
-    categorieServices = list(map(lambda x: x.libelle, CategorieService.objects.all()))
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
@@ -54,7 +49,6 @@ def solved(request):
         "error": error,
         "success": success,
         "demandes": demandes,
-        "filtres": categorieServices,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
@@ -99,7 +93,7 @@ def traiter_demande(request, id_demande):
                     demande.etat = EtatDemande.objects.get(libelle="Terminée")
                     demande.save()
                     # enregistrement de la solution
-                    solution = traiter.objects.create(demande=demande, utilisateur=user, solution=solution)
+                    solution = Traiter.objects.create(demande=demande, utilisateur=user, solution=solution)
                     request.session["success"] = f"La demande {id_demande} a été traitée avec succès."
                 except:
                     request.session["error"] = f"La demande {id_demande} n'a pas pu être traitée."
@@ -119,7 +113,7 @@ def consulter_demande(request, id_demande):
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     if id_demande:
         try:
-            traitement = traiter.objects.filter(demande=Demande.objects.get(id=id_demande))
+            traitement = Traiter.objects.filter(demande=Demande.objects.get(id=id_demande))
         except:
             return redirect("/agent/solved")
     return render(request, "agent/consulter_demande.html", {

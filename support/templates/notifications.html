@@ -41,6 +41,7 @@ Tableau de bord
                         </div>
             {%endfor%}
             {% for a in anciennes_notifications %}
+                {% if a not in nouvelles_notifications %}
                         <div class="row" >
                             <div class="col-xl-12">
                                 <div class="col-xl-10">
@@ -74,6 +75,7 @@ Tableau de bord
                               </div>
                             </div>
                         </div>
+                {%endif%}
             {%endfor%}
 
         </section>
