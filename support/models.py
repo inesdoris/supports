@@ -47,10 +47,6 @@ class CategorieService(models.Model):
 class Service(models.Model):
     libelle = models.CharField(max_length=100)
     categorie = models.ForeignKey(CategorieService, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return f"{self.libelle}"
-
 
 class Demande(models.Model):
     description = models.CharField(max_length=150)

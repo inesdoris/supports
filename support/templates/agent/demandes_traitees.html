@@ -25,6 +25,7 @@ Demandes terminées
             <!-- Recent Sales -->
             <div class="col-12">
               <div class="card recent-sales overflow-auto">
+<<<<<<< HEAD
 
                 <div class="filter">
                   <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
@@ -41,15 +42,26 @@ Demandes terminées
 
                 <div class="card-body">
                   <h5 class="card-title">{{type}} <span>| Today</span></h5>
+=======
+                
+                <div class="card-body">
+                  <!-- <h5 class="card-title">{{type}} <span>| Today</span></h5> -->
+>>>>>>> dev_ange
 
                   <table class="table table-borderless datatable">
                     <thead>
                       <tr>
                         <th scope="col">#</th>
+<<<<<<< HEAD
                           <th scope="col">Services</th>
                           <th scope="col">Détails</th>
                           <th scope="col">Actions</th>
                           <th scope="col">...</th>
+=======
+                          <th scope="col">Détails</th>
+                          <th scope="col">Envoi de la solution</th>
+                          <th scope="col">Consulter les infos de la demande</th>
+>>>>>>> dev_ange
                       </tr>
                     </thead>
 
@@ -58,6 +70,7 @@ Demandes terminées
                         <tr>
                           <th scope="row"><a href="#">#{{demande.id}}</a></th>
                           <!-- c'est plutot le type de service qui sera indiqué ici -->
+<<<<<<< HEAD
                           <td>{{demande.service.libelle}}</td>
                           <td><a href="#" class="text-primary">
                             {% if demande.demandeur.sexe %}
@@ -67,17 +80,36 @@ Demandes terminées
                             {% endif %}
                           </a></td>
                           <td><button id="send-to-admin" class="btn btn-success" idDemande="{{demande.id}}">Envoyer la solution à l'admin</button></td>
+=======
+                          <td>
+                            <span><b>Service:</b> {{demande.service.libelle}}</span>
+                            <br/>
+                            <a href="#" class="text-primary">
+                              {% if demande.demandeur.sexe %}
+                                <span>Formulée par M. {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</span>
+                              {% else %}
+                                <span>Formulée par Mme {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</span>
+                              {% endif %}
+                            </a>
+                            <br/>
+                            <span><b>Catégorie:</b> {{demande.service.categorie.libelle}}</span>
+                          </td>
+                          <td><a href="{% url 'envoi-admin' demande.id %}"><button id="send-to-admin" class="btn btn-success" idDemande="{{demande.id}}">Envoyer la solution à l'admin</button></a></td>
+>>>>>>> dev_ange
                           <td><a href="{% url 'consulter-une-demande' demande.id %}"><button class="btn btn-primary">Consulter</button></a></td>
                         </tr>
                       {% endfor %}
                     </tbody>
                   </table>
+<<<<<<< HEAD
                   <script>
                     adminButton = document.querySelector("#send-to-admin")
                     adminButton.addEventListener("click", () => {
                       alert(`Not yet implemented... But it is related to number ${adminButton.getAttribute("idDemande")}`)
                     })
                   </script>
+=======
+>>>>>>> dev_ange
                 </div>
 
               </div>

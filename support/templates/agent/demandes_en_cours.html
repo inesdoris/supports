@@ -26,6 +26,7 @@ Demandes en cours
             <div class="col-12">
               <div class="card recent-sales overflow-auto">
 
+<<<<<<< HEAD
                 <div class="filter">
                   <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                   <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -41,6 +42,9 @@ Demandes en cours
 
                 <div class="card-body">
                   <h5 class="card-title">{{type}} <span>| Today</span></h5>
+=======
+                <div class="card-body">
+>>>>>>> dev_ange
 
                   <table class="table table-borderless datatable">
                     <thead>
@@ -48,7 +52,12 @@ Demandes en cours
                         <th scope="col">#</th>
                         <th scope="col">Détails</th>
                         <th scope="col">Description</th>
+<<<<<<< HEAD
                         <th scope="col">Actions</th>
+=======
+                        <th scope="col">Traitement</th>
+                        <th scope="col">Fin de traitement</th>
+>>>>>>> dev_ange
                       </tr>
                     </thead>
 
@@ -56,6 +65,7 @@ Demandes en cours
                       {% for demande in demandes %}
                         <tr>
                           <th scope="row"><a href="#">#{{demande.id}}</a></th>
+<<<<<<< HEAD
                           <td><a href="#" class="text-primary">
                             {% if demande.demandeur.sexe %}
                                 <pre>Formulé par M. {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</pre>
@@ -65,6 +75,24 @@ Demandes en cours
                           </a></td>
                             <td>{{demande.description}}</td>
                             <td><a href="{% url 'traiter-une-demande' demande.id %}" class="text-primary"><button class="btn btn-warning">Traiter</button></a></td>
+=======
+                          <td>
+                                <span><b>Service:</b> {{demande.service.libelle}}</span>
+                                <br/>
+                                <a href="#" class="text-primary">
+                                  {% if demande.demandeur.sexe %}
+                                    <span>Formulée par M. {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</span>
+                                  {% else %}
+                                    <span>Formulée par Mme {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</span>
+                                  {% endif %}
+                                </a>
+                                <br/>
+                                <span><b>Catégorie:</b> {{demande.service.categorie.libelle}}</span>
+                          </td>
+                            <td>{{demande.description}}</td>
+                            <td><a href="{% url 'traiter-une-demande' demande.id %}" class="text-primary"><button class="btn btn-warning">Traiter</button></a></td>
+                            <td><a href="{% url 'mettre-une-demande-en-fin-de-traitement' demande.id %}" class="text-primary"><button class="btn btn-danger">Mettre en fin de traitement</button></a></td>
+>>>>>>> dev_ange
                         </tr>
                       {% endfor %}
                     </tbody>

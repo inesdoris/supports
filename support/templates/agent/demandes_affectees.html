@@ -26,6 +26,7 @@ Demandes affectées
             <div class="col-12">
               <div class="card recent-sales overflow-auto">
 
+<<<<<<< HEAD
                 <div class="filter">
                   <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                   <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -41,14 +42,22 @@ Demandes affectées
 
                 <div class="card-body">
                   <h5 class="card-title">{{type}} <span>| Today</span></h5>
+=======
+                <div class="card-body">
+>>>>>>> dev_ange
 
                   <table class="table table-borderless datatable">
                     <thead>
                       <tr>
                         <th scope="col">#</th>
                         <th scope="col">Détails</th>
+<<<<<<< HEAD
                         <th scope="col">Actions</th>
                         <th scope="col">...</th>
+=======
+                        <th scope="col">Début de traitement</th>
+                        <th scope="col">Catégorisation</th>
+>>>>>>> dev_ange
                       </tr>
                     </thead>
 
@@ -56,6 +65,7 @@ Demandes affectées
                       {% for demande in demandes %}
                         <tr>
                           <th scope="row"><a href="#">#{{demande.id}}</a></th>
+<<<<<<< HEAD
                           <td><a href="#" class="text-primary">
                             {% if demande.demandeur.sexe %}
                                 <pre>Formulé par M. {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</pre>
@@ -65,6 +75,30 @@ Demandes affectées
                           </a></td>
                           <td><a href="{% url 'mettre-une-demande-en-cours-de-traitement' demande.id %}" class="text-primary"><button class="btn btn-danger">Mettre en cours de traitement</button></a></td>
                           <td><a href="{% url 'categoriser-une-demande' demande.id %}" class="text-primary"><button class="btn btn-danger">Catégoriser la demande</button></a></td>
+=======
+                          <td>
+                            <span><b>Service:</b> {{demande.service.libelle}}</span>
+                            <br/>
+                            <a href="#" class="text-primary">
+                              {% if demande.demandeur.sexe %}
+                                <span>Formulée par M. {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</span>
+                              {% else %}
+                                <span>Formulée par Mme {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</span>
+                              {% endif %}
+                            </a>
+                            <br/>
+                            {%if demande.service.categorie%}
+                              <span><b>Catégorie:</b> {{demande.service.categorie.libelle}}</span>
+                          </td>
+                            <td><a href="{% url 'mettre-une-demande-en-cours-de-traitement' demande.id %}" class="text-primary"><button class="btn btn-danger">Mettre en cours de traitement</button></a></td>
+                            <td><a href="{% url 'categoriser-une-demande' demande.id %}" class="text-primary"><button class="btn btn-danger">Catégoriser la demande</button></a></td>
+                            {%else%}
+                              <span><b>Catégorie:</b> N/A</span>
+                          </tr>
+                            <td><a href="{% url 'mettre-une-demande-en-cours-de-traitement' demande.id %}" class="text-primary disabled"><button class="btn btn-danger disabled">Mettre en cours de traitement</button></a></td>
+                            <td><a href="{% url 'categoriser-une-demande' demande.id %}" class="text-primary"><button class="btn btn-danger">Catégoriser la demande</button></a></td>
+                            {%endif%}
+>>>>>>> dev_ange
                         </tr>
                       {% endfor %}
                     </tbody>

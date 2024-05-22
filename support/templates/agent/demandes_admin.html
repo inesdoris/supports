@@ -1,0 +1,75 @@
+{%extends 'agent/index.html'%}
+{% load static %}
+
+{%block title%}
+Demandes terminées
+{%endblock%}
+
+{% block main %}
+    <div class="pagetitle">
+      <h1>Accueil</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">Demandes envoyées à l'admin</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-12">
+          <div class="row">
+            <!-- Recent Sales -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+                
+                <div class="card-body">
+                  <h5 class="card-title">{{type}} <span>| Today</span></h5>
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                          <th scope="col">Détails</th>
+                          <th scope="col">Description</th>
+                          <th scope="col">Solution</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {% for traitement in traitements %}
+                        <tr>
+                          <th scope="row"><a href="#">#{{traitement.demande.id}}</a></th>
+                          <td>
+                            <span><b>Service:</b> {{traitement.demande.service.libelle}}</span>
+                            <br/>
+                            <a href="#" class="text-primary">
+                              {% if traitement.demande.demandeur.sexe %}
+                                <span>Formulée par M. {{traitement.demande.demandeur.nom}} {{traitement.demande.demandeur.prenom}}, le {{traitement.demande.date_formulation}}</span>
+                              {% else %}
+                                <span>Formulée par Mme {{traitement.demande.demandeur.nom}} {{traitement.demande.demandeur.prenom}}, le {{traitement.demande.date_formulation}}</span>
+                              {% endif %}
+                            </a>
+                            <br/>
+                            <span><b>Catégorie:</b> {{traitement.demande.service.categorie.libelle}}</span>
+                          </td>
+                          <td>{{traitement.demande.description}}</td>
+                          <td>{{traitement.solution}}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+            </div><!-- End Recent Sales -->
+
+          </div>
+        </div><!-- End Left side columns -->
+
+      </div>
+    </section>
+    {%endblock%}
