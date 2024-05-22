@@ -61,7 +61,7 @@ Demandes affectées
                             {%else%}
                               <span><b>Catégorie:</b> N/A</span>
                           </td>  <!-- It shoudl be td instead of tr  -->
-                            <td><a href="{% url 'mettre-une-demande-en-cours-de-traitement' demande.id %}" class="text-primary disabled"><button class="btn btn-danger disabled">Mettre en cours de traitement</button></a></td>
+                            <td><button class="btn btn-danger disabled">Mettre en cours de traitement</button></td>  <!-- Anchor tag deletion -->
                             <td><a href="{% url 'categoriser-une-demande' demande.id %}" class="text-primary"><button class="btn btn-danger">Catégoriser la demande</button></a></td>
                             {%endif%}
                         </tr>
