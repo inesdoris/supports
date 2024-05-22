@@ -1,0 +1,81 @@
+{%extends 'agent/index.html'%}
+{% load static %}
+
+{%block title%}
+Tableau de bord
+{%endblock%}
+{%block main%}
+<main>
+
+    <!--<div class="pagetitle">
+      <h1>Tableau de bord</h1>
+      &lt;!&ndash;<nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">Forms</li>
+          <li class="breadcrumb-item active">Layouts</li>
+        </ol>
+      </nav>&ndash;&gt;
+    </div>&lt;!&ndash; End Page Title &ndash;&gt;-->
+        <section style="width: 1000px">
+            {%if not anciennes_notifications and not nouvelles_notifications %}
+                <h2>Aucune notification pour le moment</h2>
+            {%endif%}
+            {% for n in nouvelles_notifications %}
+                        <div class="row" >
+                            <div class="col-xl-12">
+                                <div class="col-xl-10">
+                                    <div class="card" style="padding: 10px">
+
+                                         <div style="display: flex; justify-content: space-between;">
+                                             <h4>{{n.date_notification}}</h4>
+                                             <div style="border-radius: 10%; width:100; padding: 5px; padding-top:8px" class="bg-success">
+                                                <h5 style="color: white; font-size: 15px">Nouveau</h5>
+                                             </div>
+                                         </div>
+                                         <h4>{{n.message}}</h4>
+
+                                    </div>
+                              </div>
+                            </div>
+                        </div>
+            {%endfor%}
+            {% for a in anciennes_notifications %}
+                        <div class="row" >
+                            <div class="col-xl-12">
+                                <div class="col-xl-10">
+                                    <div class="card" style="padding: 10px">
+
+                                         <h4>{{a.date_notification}}</h4>
+                                         <h4>{{a.message}}</h4>
+
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteNotif{{a.id}}"  style="width: 120px">
+                                            <i class="bi bi-trash">  Supprimer</i>
+                                        </button>
+                                              <div class="modal fade" id="deleteNotif{{a.id}}" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                  <div class="modal-content">
+                                                    <div class="modal-header">
+                                                      <h5 class="modal-title">Suppression de notification</h5>
+                                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                      Êtes-vous sûr ?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <a href="/notifications/{{a.id}}/supprimer"><button type="button" class="btn btn-danger">Oui</button></a>
+                                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                    </div>
+                              </div>
+                            </div>
+                        </div>
+            {%endfor%}
+
+        </section>
+</main>
+{%endblock%}
