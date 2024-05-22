@@ -1,13 +1,13 @@
 from support.models import *
 
 ############# PROFIL
-p = Profil(titre="ADMINISTRATEUR")
+p = Profil(libelle="ADMINISTRATEUR")
 p.save()
 
-p = Profil(titre="AGENT")
+p = Profil(libelle="AGENT")
 p.save()
 
-p = Profil(titre="CHEF AGENCE")
+p = Profil(libelle="CHEF AGENCE")
 p.save()
 
 ############# AGENCE
@@ -28,8 +28,16 @@ s = Section(nom="Réseau et maintenance")
 s.save()
 
 ########### UTILISATEUR
-u = Utilisateur(login="aa", password=chiffrement("aa"), nom="DOE", prenom="John", email="test@gmail.com", sexe=True, adresse="Akpakpa",
+u = Utilisateur(login="aa", password="tt", nom="DOE", prenom="John", email="test@gmail.com", sexe=True, adresse="Akpakpa",
  contact="+2290095959855", profil_id=1, agence_id=1)
+u.save()
+
+u = Utilisateur(login="paul", password="itne", nom="DOSSOU", prenom="Firmine", email="firmine@gmail.com", sexe=False, adresse="Ouidah",
+ contact="+22987412563", profil_id=3, agence_id=2)
+u.save()
+
+u = Utilisateur(login="lucio", password="envbh", nom="TOPANOU", prenom="Ludel", email="ludel@gmail.com", sexe=True, adresse="Calavi",
+ contact="+22961012344", profil_id=2, agence_id=3, section_id=1)
 u.save()
 
 ########### CATEGORIE
@@ -62,6 +70,12 @@ sv = Service(libelle="Réparation d'un équipement informatique", categorie_id=4
 sv.save()
 
 ########### ETAT
+e = EtatDemande(libelle="Envoyée")
+e.save()
+
 e = EtatDemande(libelle="En cours")
+e.save()
+
+e = EtatDemande(libelle="Terminée")
 e.save()
 

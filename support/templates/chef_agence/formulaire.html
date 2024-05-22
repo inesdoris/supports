@@ -17,35 +17,39 @@ Formulaire demande
         </ol>
       </nav>-->
     </div><!-- End Page Title -->
-    <section class="section">
+    <section class="section" style="width: 1000px">
       <div class="row">
-        <div class="col-lg-6">
-
-          <div class="card">
-            <div class="card-body">
+        <div class="col-xl-12">
 
                 <div class="col-lg-6">
                     <div class="card">
                       <div class="card-body">
                         <!--<h5 class="card-title">Vertical Form</h5>-->
-          
+
                         <!-- Vertical Form -->
                         <form method="post" class="row g-3">
                           {% csrf_token %}
                             <div class="col-12">
-                                <label for="floatingTextarea">Décrivez votre demande</label>
-                                <textarea class="form-control" id="floatingTextarea" style="height: 100px;"></textarea>
+                                    <label for="serviceAssocié" class="col-form-label" style="font-size: 20px; margin-top:10px; margin-bottom:5px" >Sélectionnez un service</label>
+                                    <div class="col-sm-10">
+                                      <select class="form-select" id="serviceAssocié" aria-label="Default select example" name="service" required style="margin-bottom:10px">
+                                        <option value="">Sélectionnez un service</option>
+                                        {% for service in service %}
+                                        <option value="{{service.id}}">{{service.libelle}}</option>
+                                        {%endfor%}
+                                      </select>
+                                    </div>
+                                <label for="floatingTextarea" style="font-size: 20px">Décrivez votre demande</label>
+                                <textarea class="form-control" id="floatingTextarea" style="height: 100px;" name="description"></textarea>
                             </div>
                             <div class="text-center">
                               <button type="submit" class="btn btn-primary">Envoyer</button>
                               <button type="reset" class="btn btn-secondary">Annuler</button>
                             </div>
                         </form><!-- Vertical Form -->
-          
+
                       </div>
                     </div>
-                  </div>
-                </div>        
               </div>
             </div>
           </div>

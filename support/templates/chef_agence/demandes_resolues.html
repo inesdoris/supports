@@ -1,0 +1,57 @@
+{%extends 'base.html'%}
+{% load static %}
+
+{%block title%}
+Tableau de bord
+{%endblock%}
+{%block main%}
+<main >
+
+    <div class="pagetitle">
+      <h1>Tableau de bord</h1>
+      <!--<nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">Forms</li>
+          <li class="breadcrumb-item active">Layouts</li>
+        </ol>
+      </nav>-->
+    </div><!-- End Page Title -->
+        <section style="width: 1000px">
+            <!-- Table with stripped rows -->
+              <div class="card p-3">
+                <div class="pagetitle">
+                    <h1>Liste des demandes résolues</h1>
+                  </div><!-- End Page Title -->
+                <table class="table datatable">
+                    <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Service</th>
+                        <th scope="col">Etat</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {%for d in demandes_resolues %}
+                        <tr>
+                            <td>{{d.date_formulation}} </td>
+                            <td>{{d.service.libelle}} </td>
+                            <td>{{d.etat.libelle}} </td>
+                            <td>
+                                <div class="text-end">
+                                    <a href="/demande/{{d.id}}/consulter">
+                                        <button type="button" class="btn btn-light">Consulter</button>
+                                    </a>
+                                </div>
+                            </td>
+                        {%endfor%}
+                    </tbody>
+                </table>
+              </div>
+          <!-- End Table with stripped rows -->
+        </section>
+        </div>
+      </div>
+  </main>
+{%endblock%}
