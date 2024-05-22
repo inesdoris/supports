@@ -155,13 +155,9 @@ def ajout_utilisateur(request):
         
         if section:
             try:
-                u.section = Section.objects.get(id=int(section))
+                u.section_id = int(section)
             except ValueError:
                 error = "Section non valide"
-                request.session["error"] = error
-                return redirect("/utilisateur/ajout")
-            except Section.DoesNotExist:
-                error = "Section non trouvée"
                 request.session["error"] = error
                 return redirect("/utilisateur/ajout")
         
