@@ -118,7 +118,7 @@ def traiter_demande(request, id_demande):
     services = Service.objects.exclude(libelle="...")
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     demande = Demande.objects.get(id=id_demande)
-    solution_precedemment_renseignee = Traiter.objects.get(demande=demande).solution if Traiter.objects.filter(demande=demande) else None
+    solution_precedemment_renseignee = Traiter.objects.get(demande=demande).solution if Traiter.objects.filter(demande=demande) else "" # None has been discared
     if demande.agent==user:
         if request.method == "POST":
             solution = request.POST.get("solution_detaillee")
