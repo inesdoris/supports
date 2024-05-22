@@ -60,7 +60,7 @@ Demandes affectées
                             <td><a href="{% url 'categoriser-une-demande' demande.id %}" class="text-primary"><button class="btn btn-danger">Catégoriser la demande</button></a></td>
                             {%else%}
                               <span><b>Catégorie:</b> N/A</span>
-                          </tr>
+                          </td>  <!-- It shoudl be td instead of tr  -->
                             <td><a href="{% url 'mettre-une-demande-en-cours-de-traitement' demande.id %}" class="text-primary disabled"><button class="btn btn-danger disabled">Mettre en cours de traitement</button></a></td>
                             <td><a href="{% url 'categoriser-une-demande' demande.id %}" class="text-primary"><button class="btn btn-danger">Catégoriser la demande</button></a></td>
                             {%endif%}
