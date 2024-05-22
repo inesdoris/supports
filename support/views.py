@@ -14,16 +14,8 @@ def index(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-<<<<<<< HEAD
-<<<<<<< HEAD
     if user.profil == Profil.objects.get(id=1):
         return redirect("/demande/recues")
-=======
->>>>>>> dev_ange
-=======
-    if user.profil == Profil.objects.get(id=1):
-        return redirect("/demande/recues")
->>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
     if user.profil == Profil.objects.get(id=2):
         return redirect("/agent")
     if user.profil == Profil.objects.get(id=3):
@@ -49,8 +41,6 @@ def login(request):
             u = Utilisateur.objects.filter(login=login).first()
             if u.password == chiffrement(password):
                 request.session["user_id"] = u.id
-                if u.profil == Profil.objects.get(id=3):
-                    return redirect("chef_agence/dashboard")
                 return redirect("/")
             else:
                 request.session["error"] = "Login ou mot de passe incorrect"
@@ -368,14 +358,8 @@ def formulaire(request):
             etat = EtatDemande.objects.get(id=1)
             demandeur = user
             service = Service.objects.get(id=request.POST.get("service"))
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
             service.categorie = None
             service.save()
->>>>>>> dev_ange
-=======
->>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
             date_formulation = timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone())
             d = Demande(description=description, etat=etat, demandeur=demandeur, service=service,
                         date_formulation=date_formulation)
@@ -500,13 +484,7 @@ def affecter_agent(request, demande_id):
         form = AffectationAgentForm(request.POST, instance=demande)
         if form.is_valid():
             form.save()
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
             Notifications.objects.create(receiver=form.cleaned_data['agent'], message="Une nouvelle demande vous a été affectée")
->>>>>>> dev_ange
-=======
->>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
             return redirect('liste_demandes_recues')  
     else:
         form = AffectationAgentForm(instance=demande)
@@ -647,20 +625,12 @@ def notifications(request):
     # Récupérer le nombre de nouvelles notifications non lues après les avoir marquées comme lues
     nombre_nouvelles_notifications = nouvelles_notifications.count()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    return render(request, "notifications.html", {
-=======
     template_name = "notifications.html"
 
     if user.profil.id == 2:
         template_name = "agent/notifications.html"
 
     return render(request, template_name, {
->>>>>>> dev_ange
-=======
-    return render(request, "notifications.html", {
->>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
         "error": error,
         "success": success,
         "user": user,

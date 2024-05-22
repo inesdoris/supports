@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {%extends 'agent/index.html'%}
 {% load static %}
 
@@ -28,19 +27,6 @@ Traitement d'une demande
                             {% csrf_token %}
                                 <div class="col-12">
                                     <p><span class="text-danger"><b><u>Descriptif de la demande :</u></b></span> {{description_demande}}</p>
-<<<<<<< HEAD
-                                    <label for="floatingTextarea" class="text-muted"><u>Sélectionner le service couvert par la solution : </u></label>
-                                    <select name="service_apporte" id="service" required>
-                                            <option>---</option>
-                                        {% for service in services %}
-                                            <option value="{{service.libelle}}">{{service.libelle}}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <textarea class="form-control" id="floatingTextarea" style="height: 100px;" placeholder="Décrivez la solution spécifique à la demande n°{{id_demande}}" required name="solution_detaillee"></textarea>
-                                </div>
-                                <div class="text-center">
-                                <button type="submit" class="btn btn-primary">Appliquer</button>
-=======
                                     {% if solution_existante != "True" or solution_existante != None %}
                                      <textarea class="form-control" id="floatingTextarea" style="height: 100px;" placeholder="Décrivez la solution spécifique à la demande n°{{id_demande}}" required name="solution_detaillee">{{solution_existante}}</textarea>
                                     {% else %}
@@ -49,7 +35,6 @@ Traitement d'une demande
                                 </div>
                                 <div class="text-center">
                                 <button type="submit" class="btn btn-primary">Appliquer/Modifier</button>
->>>>>>> dev_ange
                                 <button type="reset" class="btn btn-secondary">Annuler</button>
                                 </div>
                             </form><!-- Vertical Form -->
@@ -65,61 +50,4 @@ Traitement d'une demande
       </div>
   </main>
 </center>
-=======
-{%extends 'agent/index.html'%}
-{% load static %}
-
-{%block title%}
-Traitement d'une demande
-{%endblock%}
-{%block main%}
-<center>
-<main id="fmain" class="main">
-    <div class="pagetitle">
-        <h1>Traiter une demande</h1>
-    </div><!-- End Page Title -->
-    <section class="section">
-      <div class="row">
-        <div class="col-lg-12">
-
-          <div class="card">
-            <div class="card-body">
-
-                <div class="col-lg-12">
-                    <div class="card">
-                      <div class="card-body">
-                        <!--<h5 class="card-title">Vertical Form</h5>-->
-          
-                        <!-- Vertical Form -->
-                            <form method="post" class="row g-3">
-                            {% csrf_token %}
-                                <div class="col-12">
-                                    <p><span class="text-danger"><b><u>Descriptif de la demande :</u></b></span> {{description_demande}}</p>
-                                    <label for="floatingTextarea" class="text-muted"><u>Sélectionner le service couvert par la solution : </u></label>
-                                    <select name="service_apporte" id="service" required>
-                                            <option>---</option>
-                                        {% for service in services %}
-                                            <option value="{{service.libelle}}">{{service.libelle}}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <textarea class="form-control" id="floatingTextarea" style="height: 100px;" placeholder="Décrivez la solution spécifique à la demande n°{{id_demande}}" required name="solution_detaillee"></textarea>
-                                </div>
-                                <div class="text-center">
-                                <button type="submit" class="btn btn-primary">Appliquer</button>
-                                <button type="reset" class="btn btn-secondary">Annuler</button>
-                                </div>
-                            </form><!-- Vertical Form -->
-                      </div>
-                    </div>
-                  </div>
-                </div>        
-              </div>
-            </div>
-          </div>
-        </section>
-        </div>
-      </div>
-  </main>
-</center>
->>>>>>> bfa885662b246bf6825714b3ab754268d09bc098
 {%endblock%}
