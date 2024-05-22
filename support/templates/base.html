@@ -67,65 +67,74 @@
 
         <li class="nav-item dropdown">
 
-          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          <a class="nav-link nav-icon"  data-bs-toggle="dropdown">
             <i class="bi bi-chat-left-text"></i>
-            <span class="badge bg-success badge-number">3</span>
+            {% if  nombre_nouvelles_notifications %}
+              <span class="badge bg-success badge-number">{{ nombre_nouvelles_notifications }}</span>
+            {%endif%}
           </a><!-- End Messages Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-            <li class="dropdown-header">
-              You have 3 new messages
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
+            {%if nombre_nouvelles_notifications == 0 %}
+              <li class="dropdown-header">
+                Aucune nouvelle notification.
+                <a href="/notifications"><span class="badge rounded-pill bg-primary p-2 ms-2">Tout voir</span></a>
+              </li>
+            {%elif nombre_nouvelles_notifications > 0 %}
+              <li class="dropdown-header">
+                Vous avez {{nombre_nouvelles_notifications}} nouvelles notifications.
+                <a href="/notifications"><span class="badge rounded-pill bg-primary p-2 ms-2">Tout voir</span></a>
+              </li>
+<!--            <li>-->
+<!--              <hr class="dropdown-divider">-->
+<!--            </li>-->
 
-            <li class="message-item">
-              <a href="#">
-                <img src="{% static 'assets/img/messages-1.jpg' %}" alt="" class="rounded-circle">
-                <div>
-                  <h4>Maria Hudson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>4 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
+<!--            <li class="message-item">-->
+<!--              <a href="#">-->
+<!--                <img src="{% static 'assets/img/messages-1.jpg' %}" alt="" class="rounded-circle">-->
+<!--                <div>-->
+<!--                  <h4>Maria Hudson</h4>-->
+<!--                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>-->
+<!--                  <p>4 hrs. ago</p>-->
+<!--                </div>-->
+<!--              </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--              <hr class="dropdown-divider">-->
+<!--            </li>-->
 
-            <li class="message-item">
-              <a href="#">
-                <img src="{% static 'assets/img/messages-2.jpg' %}" alt="" class="rounded-circle">
-                <div>
-                  <h4>Anna Nelson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>6 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
+<!--            <li class="message-item">-->
+<!--              <a href="#">-->
+<!--                <img src="{% static 'assets/img/messages-2.jpg' %}" alt="" class="rounded-circle">-->
+<!--                <div>-->
+<!--                  <h4>Anna Nelson</h4>-->
+<!--                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>-->
+<!--                  <p>6 hrs. ago</p>-->
+<!--                </div>-->
+<!--              </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--              <hr class="dropdown-divider">-->
+<!--            </li>-->
 
-            <li class="message-item">
-              <a href="#">
-                <img src="{% static 'assets/img/messages-3.jpg' %}" alt="" class="rounded-circle">
-                <div>
-                  <h4>David Muldon</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>8 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
+<!--            <li class="message-item">-->
+<!--              <a href="#">-->
+<!--                <img src="{% static 'assets/img/messages-3.jpg' %}" alt="" class="rounded-circle">-->
+<!--                <div>-->
+<!--                  <h4>David Muldon</h4>-->
+<!--                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>-->
+<!--                  <p>8 hrs. ago</p>-->
+<!--                </div>-->
+<!--              </a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--              <hr class="dropdown-divider">-->
+<!--            </li>-->
 
-            <li class="dropdown-footer">
-              <a href="#">Show all messages</a>
-            </li>
+<!--            <li class="dropdown-footer">-->
+<!--              <a href="#">Show all messages</a>-->
+<!--            </li>-->
+            {%endif%}
 
           </ul><!-- End Messages Dropdown Items -->
 
@@ -200,7 +209,7 @@
               <i class="bi bi-circle"></i><span>Liste</span>
             </a>
           </li>
-          
+
         </ul>
       </li><!-- End Components Nav -->
 
@@ -228,17 +237,17 @@
         </a>
         <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="#">
+            <a href="/demande/recues">
               <i class="bi bi-circle"></i><span>Demandes reçues</span>
             </a>
           </li>
           <li>
-            <a href="#">
+            <a href="/demande/affectees">
               <i class="bi bi-circle"></i><span>Demandes affectées</span>
             </a>
           </li>
           <li>
-            <a href="#">
+            <a href="/demande/traitees">
               <i class="bi bi-circle"></i><span>Demandes traitées</span>
             </a>
           </li>
@@ -283,7 +292,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="/">
+        <a class="nav-link " href="/chef_agence/dashboard">
           <i class="bi bi-grid"></i>
           <span>Tableau de bord</span>
         </a>
@@ -291,25 +300,26 @@
 
       <li class="nav-item">
         <a class="nav-link " href="/chef_agence/formulaire">
-          <i class="bi bi-grid"></i>
+          <i class="bi bi-pencil"></i>
           <span>Formuler une demande</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link " href="/">
-          <i class="bi bi-grid"></i>
+        <a class="nav-link " href="/chef_agence/demandes_en_attente">
+          <i class="bi bi-clock"></i>
           <span>Demandes en attente</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link " href="/">
-          <i class="bi bi-grid"></i>
+        <a class="nav-link " href="/chef_agence/demandes_resolues">
+          <i class="bi bi-check-circle"></i>
           <span>Demandes résolues</span>
         </a>
       </li><!-- End Components Nav -->
     {%endif%}
+
 
   </aside><!-- End Sidebar-->
   {%endblock%}

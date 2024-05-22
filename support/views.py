@@ -1,5 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from .models import *
+from .forms import AffectationAgentForm, DemandeForm
 
 
 # Create your views here.
@@ -7,13 +9,20 @@ def index(request):
     user_id = request.session.get('user_id', None)
     error = request.session.pop('error', None)
     success = request.session.pop('success', None)
+
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    if user.profil == Profil.objects.get(id=2):
+        return redirect("/agent")
+    if user.profil == Profil.objects.get(id=3):
+        return redirect("chef_agence/dashboard")
     return render(request, 'index.html', {
         "error": error,
         "success": success,
         "user": user,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
 
@@ -30,6 +39,8 @@ def login(request):
             u = Utilisateur.objects.filter(login=login).first()
             if u.password == chiffrement(password):
                 request.session["user_id"] = u.id
+                if u.profil == Profil.objects.get(id=3):
+                    return redirect("chef_agence/dashboard")
                 return redirect("/")
             else:
                 request.session["error"] = "Login ou mot de passe incorrect"
@@ -55,6 +66,7 @@ def profil(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     if request.POST:
         if "photo" in request.FILES:
             user.image = request.FILES["photo"]
@@ -84,6 +96,7 @@ def profil(request):
         "user": user,
         "error": error,
         "success": success,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
 
@@ -97,6 +110,7 @@ def ajout_utilisateur(request):
     profils = Profil.objects.all()
     agences = Agence.objects.all()
     sections = Section.objects.all()
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     if request.POST:
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -109,29 +123,63 @@ def ajout_utilisateur(request):
         profil = request.POST.get("profil")
         agence = request.POST.get("agence")
         section = request.POST.get("section")
-
         image = request.FILES.get("image")
+        
         if Utilisateur.objects.filter(login=username).exists():
             error = "Ce nom d'utilisateur est déjà utilisé !!"
             request.session["error"] = error
             return redirect("/utilisateur/ajout")
-        u = Utilisateur(login=username, password=chiffrement(password), nom=nom, prenom=prenom, email=email, sexe=sexe,
-                        adresse=adresse, contact=contact,
-                        profil_id=int(profil), agence_id=int(agence), image=image)
+        
+        u = Utilisateur(
+            login=username,
+            password=chiffrement(password),
+            nom=nom,
+            prenom=prenom,
+            email=email,
+            sexe=sexe,
+            adresse=adresse,
+            contact=contact,
+            profil_id=int(profil)
+        )
+        
+        if image:
+            u.image = image
+        
+        if agence:
+            try:
+                u.agence_id = int(agence)
+            except ValueError:
+                error = "Agence non valide"
+                request.session["error"] = error
+                return redirect("/utilisateur/ajout")
+        
         if section:
-            u.section = Section.objects.get(id=int(section))
+            try:
+                u.section = Section.objects.get(id=int(section))
+            except ValueError:
+                error = "Section non valide"
+                request.session["error"] = error
+                return redirect("/utilisateur/ajout")
+            except Section.DoesNotExist:
+                error = "Section non trouvée"
+                request.session["error"] = error
+                return redirect("/utilisateur/ajout")
+        
         u.save()
+        
         request.session["success"] = "L'utilisateur a été enregistré avec succès !!"
         return redirect("/utilisateur/liste")
-
+    
     return render(request, "utilisateur/ajout.html", {
         "error": error,
         "success": success,
         "user": user,
         "profils": profils,
         "agences": agences,
-        "sections": sections
+        "sections": sections,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
+
 
 
 def liste_utilisateur(request):
@@ -141,12 +189,14 @@ def liste_utilisateur(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     utilisateurs = Utilisateur.objects.all()
     return render(request, "utilisateur/liste.html", {
         "error": error,
         "success": success,
         "user": user,
-        "utilisateurs": utilisateurs
+        "utilisateurs": utilisateurs,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
 
@@ -157,6 +207,7 @@ def modifier_utilisateur(request, id):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     profils = Profil.objects.all()
     agences = Agence.objects.all()
     sections = Section.objects.all()
@@ -201,7 +252,8 @@ def modifier_utilisateur(request, id):
         "u": u,
         "profils": profils,
         "agences": agences,
-        "sections": sections
+        "sections": sections,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
 
@@ -218,7 +270,8 @@ def ajout_agence(request):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user = Agence.objects.get(id=user_id)
+    user = Utilisateur.objects.get(id=user_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     if request.POST:
         nom = request.POST.get("nom")
         if Agence.objects.filter(nom=nom).exists():
@@ -233,7 +286,8 @@ def ajout_agence(request):
     return render(request, "agence/ajout.html", {
         "error": error,
         "success": success,
-        "user": user
+        "user": user,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
 
@@ -243,13 +297,15 @@ def liste_agence(request):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user = Agence.objects.get(id=user_id)
+    user = Utilisateur.objects.get(id=user_id)
     agences = Agence.objects.all()
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "agence/liste.html", {
         "error": error,
         "success": success,
         "user": user,
-        "agences": agences
+        "agences": agences,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
 
@@ -259,7 +315,8 @@ def modifier_agence(request, id):
     success = request.session.pop('success', None)
     if not user_id:
         return redirect('/login')
-    user = Agence.objects.get(id=user_id)
+    user = Utilisateur.objects.get(id=user_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     a = Agence.objects.get(id=id)
     if request.POST:
         nom = request.POST.get("nom")
@@ -275,36 +332,16 @@ def modifier_agence(request, id):
         "error": error,
         "success": success,
         "user": user,
-        "a": a
+        "a": a,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
 
 def supprimer_agence(request, id):
-    user_id = request.session.get('user_id', None)
-    error = request.session.pop('error', None)
-    success = request.session.pop('success', None)
-    if not user_id:
-        return redirect('/login')
-    user = Agence.objects.get(id=user_id)
     a = Agence.objects.get(id=id)
-    if request.POST:
-        nom = request.POST.get("nom")
-        #contact = request.POST.get("contact")
-        try:
-            a.nom = nom
-            #a.contact = contact
-        except:
-            request.session["error"] = "La suppression ne s'est pas bien déroulée"
-            return redirect(f"/agence/{a.id}/supprimer")
-        a.save()
-        request.session["success"] = "La suppression s'est bien déroulée"
-        return redirect("/agence/liste")
-    return render(request, "agence/supprimer.html", {
-        "error": error,
-        "success": success,
-        "user": user,
-        "a": a
-    })
+    a.delete()
+    request.session["success"] = "L'agence a bien été supprimée !!"
+    return redirect("/agence/liste")
 
 
 def formulaire(request):
@@ -314,24 +351,292 @@ def formulaire(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandeur = Utilisateur.objects.all()
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    demandeur = user
     service = Service.objects.all()
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     if request.POST:
-        description = request.POST.get("description")
-        etat = request.POST.get("etat")
-        demandeur = request.POST.get("demandeur")
-        service = request.POST.get("service")
-        date_formulation = request.POST.get("datef")
-        d = Demande(description=description, etat=etat, demandeur=demandeur, service=service,
-                    date_formulation=date_formulation)
-        d.save()
-        request.session["success"] = "La demande a bien été envoyée !!"
-        return redirect("/chef_agence/formulaire")
+        try:
+            if request.POST.get('description') != "":
+                description = request.POST.get("description")
+            etat = EtatDemande.objects.get(id=1)
+            demandeur = user
+            service = Service.objects.get(id=request.POST.get("service"))
+            date_formulation = timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone())
+            d = Demande(description=description, etat=etat, demandeur=demandeur, service=service,
+                        date_formulation=date_formulation)
+            d.save()
+            nouvelle_notification = Notifications(
+                receiver=Utilisateur.objects.get(profil__id=1),
+                message="Vous avez reçue une nouvelle demande !",
+                date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
+            )
+            nouvelle_notification.save()
+            request.session["success"] = "La demande a bien été envoyée !!"
+            return redirect("/chef_agence/dashboard")
+
+        except:
+            request.session["error"] = "Une erreur est survenue"
+            return redirect("/chef_agence/formulaire")
 
     return render(request, "chef_agence/formulaire.html", {
         "error": error,
         "success": success,
         "user": user,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
         "demandeur": demandeur,
-        "service": service
+        "service": service,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
+    
+def liste_demandes_recues(request):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    user = Utilisateur.objects.get(id=user_id)
+    demandes_recues = Demande.objects.filter(etat=EtatDemande.objects.first())
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    return render(request, "demande/recues.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "demandes_recues": demandes_recues,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+    })
+    
+def liste_demandes_affectees(request):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    user = Utilisateur.objects.get(id=user_id)
+    demandes_affectees = Demande.objects.filter(etat=EtatDemande.objects.get(id=2))
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    return render(request, "demande/affectees.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "demandes_affectees": demandes_affectees,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+    })
+    
+def liste_demandes_traitees(request):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    
+    user = Utilisateur.objects.get(id=user_id)
+    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(id=3))
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    
+    # Récupérer la solution associée à chaque demande traitée
+    solutions = {}
+    for demande in demandes_traitees:
+        traitement = Traiter.objects.filter(demande=demande).first()
+        solutions[demande.id] = traitement.solution if traitement else None
+    
+    return render(request, "demande/traitees.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "demandes_traitees": demandes_traitees,
+        "solutions": solutions,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+    })
+
+def envoyer_solution(request, demande_id):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    user = Utilisateur.objects.get(id=user_id)
+    demande = Demande.objects.get(id=demande_id)
+    solution = ""
+    chef_agent = None
+
+    # Récupérer la solution et le chef agent associés à la demande sélectionnée
+    traitement = Traiter.objects.filter(demande=demande).first()
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    if traitement:
+        solution = traitement.solution
+        chef_agent = demande.demandeur  # Par défaut, utilisez le demandeur comme chef agent
+    
+    return render(request, "demande/envoyer_solution.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "demande": demande,
+        "solution": solution,
+        "chef_agent": chef_agent,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+    })  
+    
+def affecter_agent(request, demande_id):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    user = Utilisateur.objects.get(id=user_id)
+    demande = get_object_or_404(Demande, id=demande_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    if request.method == 'POST':
+        form = AffectationAgentForm(request.POST, instance=demande)
+        if form.is_valid():
+            form.save()
+            return redirect('liste_demandes_recues')  
+    else:
+        form = AffectationAgentForm(instance=demande)
+    return render(request, 'demande/affecter_agent.html', {
+        "error": error,
+        "success": success,
+        "user": user,
+        'form': form, 
+        'demande': demande, 
+        'nombre_nouvelles_notifications': nombre_nouvelles_notifications
+        })
+
+def chef_agence_dashboard(request):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+
+    if not user_id:
+        return redirect('/login')
+    user = Utilisateur.objects.get(id=user_id)
+    demandes = Demande.objects.filter(demandeur=user)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    return render(request, "chef_agence/dashboard.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "demandes": demandes,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+    })
+
+def chef_agence_demandes_en_attente(request):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    user = Utilisateur.objects.get(id=user_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    demandes_en_attente = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=2))
+
+    return render(request, "chef_agence/demandes_en_attente.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "demandes_en_attente": demandes_en_attente
+    })
+
+def chef_agence_demandes_resolues(request):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    user = Utilisateur.objects.get(id=user_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    demandes_resolues = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=3))
+
+    return render(request, "chef_agence/demandes_resolues.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "demandes_resolues": demandes_resolues
+    })
+
+def consulter_demande(request, id):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    user = Utilisateur.objects.get(id=user_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    d = Demande.objects.get(id=id)
+    return render(request, "chef_agence/consulter.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "d": d,
+    })
+    
+def modifier_demande(request, demande_id):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    user = Utilisateur.objects.get(id=user_id)
+    demande = get_object_or_404(Demande, id=demande_id)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    
+    if request.method == 'POST':
+        form = DemandeForm(request.POST, instance=demande)
+        if form.is_valid():
+            form.save()
+            return redirect('consulter_demande', id=demande.id)  # Redirige vers la page de consultation
+    else:
+        form = DemandeForm(instance=demande)
+
+    return render(request, 'chef_agence/modifier_demande.html', {
+        "error": error,
+        "success": success,
+        "user": user,
+        'form': form, 
+        'demande': demande,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        })
+
+def supprimer_demande(request, id):
+    d = Demande.objects.get(id=id)
+    d.delete()
+    request.session["success"] = "La demande a bien été supprimée !!"
+    return redirect("/chef_agence/dashboard")
+
+def notifications(request):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+
+    if not user_id:
+        return redirect('/login')
+
+    user = Utilisateur.objects.get(id=user_id)
+
+    # Récupérer les nouvelles notifications non lues
+    nouvelles_notifications = Notifications.objects.filter(receiver=user, is_read=False).order_by('-date_notification')
+
+    # Récupérer et afficher les anciennes notifications lues
+    anciennes_notifications = Notifications.objects.filter(receiver=user, is_read=True).order_by('-date_notification')
+
+    # Marquer les nouvelles notifications comme lues après les avoir récupérées
+    for notification in nouvelles_notifications:
+        notification.is_read = True
+        notification.save()
+
+    # Récupérer le nombre de nouvelles notifications non lues après les avoir marquées comme lues
+    nombre_nouvelles_notifications = nouvelles_notifications.count()
+
+    return render(request, "notifications.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "anciennes_notifications": anciennes_notifications,
+        "nouvelles_notifications": nouvelles_notifications
+    })
+
+def supprimer_notification(request, id):
+    n = Notifications.objects.get(id=id)
+    n.delete()
+    request.session["success"] = "La notification a bien été supprimée !!"
+    return redirect("/notifications")
