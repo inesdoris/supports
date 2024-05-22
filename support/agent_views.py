@@ -93,7 +93,7 @@ def traiter_demande(request, id_demande):
                     demande.etat = EtatDemande.objects.get(libelle="Terminée")
                     demande.save()
                     # enregistrement de la solution
-                    solution = traiter.objects.create(demande=demande, utilisateur=user, solution=solution)
+                    solution = Traiter.objects.create(demande=demande, utilisateur=user, solution=solution)
                     request.session["success"] = f"La demande {id_demande} a été traitée avec succès."
                 except:
                     request.session["error"] = f"La demande {id_demande} n'a pas pu être traitée."
@@ -113,7 +113,7 @@ def consulter_demande(request, id_demande):
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     if id_demande:
         try:
-            traitement = traiter.objects.filter(demande=Demande.objects.get(id=id_demande))
+            traitement = Traiter.objects.filter(demande=Demande.objects.get(id=id_demande))
         except:
             return redirect("/agent/solved")
     return render(request, "agent/consulter_demande.html", {
