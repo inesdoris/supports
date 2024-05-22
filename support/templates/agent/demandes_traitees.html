@@ -1,0 +1,76 @@
+{%extends 'agent/index.html'%}
+{% load static %}
+
+{%block title%}
+Demandes terminées
+{%endblock%}
+
+{% block main %}
+    <div class="pagetitle">
+      <h1>Accueil</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">Demandes terminées</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-12">
+          <div class="row">
+            <!-- Recent Sales -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+                
+                <div class="card-body">
+                  <!-- <h5 class="card-title">{{type}} <span>| Today</span></h5> -->
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                          <th scope="col">Détails</th>
+                          <th scope="col">Envoi de la solution</th>
+                          <th scope="col">Consulter les infos de la demande</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {% for demande in demandes %}
+                        <tr>
+                          <th scope="row"><a href="#">#{{demande.id}}</a></th>
+                          <!-- c'est plutot le type de service qui sera indiqué ici -->
+                          <td>
+                            <span><b>Service:</b> {{demande.service.libelle}}</span>
+                            <br/>
+                            <a href="#" class="text-primary">
+                              {% if demande.demandeur.sexe %}
+                                <span>Formulée par M. {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</span>
+                              {% else %}
+                                <span>Formulée par Mme {{demande.demandeur.nom}} {{demande.demandeur.prenom}}, le {{demande.date_formulation}}</span>
+                              {% endif %}
+                            </a>
+                            <br/>
+                            <span><b>Catégorie:</b> {{demande.service.categorie.libelle}}</span>
+                          </td>
+                          <td><a href="{% url 'envoi-admin' demande.id %}"><button id="send-to-admin" class="btn btn-success" idDemande="{{demande.id}}">Envoyer la solution à l'admin</button></a></td>
+                          <td><a href="{% url 'consulter-une-demande' demande.id %}"><button class="btn btn-primary">Consulter</button></a></td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+            </div><!-- End Recent Sales -->
+
+          </div>
+        </div><!-- End Left side columns -->
+
+      </div>
+    </section>
+    {%endblock%}

@@ -1,0 +1,53 @@
+{%extends 'agent/index.html'%}
+{% load static %}
+
+{%block title%}
+Traitement d'une demande
+{%endblock%}
+{%block main%}
+<center>
+<main id="fmain" class="main">
+    <div class="pagetitle">
+        <h1>Traiter une demande</h1>
+    </div><!-- End Page Title -->
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+
+                <div class="col-lg-12">
+                    <div class="card">
+                      <div class="card-body">
+                        <!--<h5 class="card-title">Vertical Form</h5>-->
+          
+                        <!-- Vertical Form -->
+                            <form method="post" class="row g-3">
+                            {% csrf_token %}
+                                <div class="col-12">
+                                    <p><span class="text-danger"><b><u>Descriptif de la demande :</u></b></span> {{description_demande}}</p>
+                                    {% if solution_existante != "True" or solution_existante != None %}
+                                     <textarea class="form-control" id="floatingTextarea" style="height: 100px;" placeholder="Décrivez la solution spécifique à la demande n°{{id_demande}}" required name="solution_detaillee">{{solution_existante}}</textarea>
+                                    {% else %}
+                                     <textarea class="form-control" id="floatingTextarea" style="height: 100px;" placeholder="Décrivez la solution spécifique à la demande n°{{id_demande}}" required name="solution_detaillee"></textarea>
+                                    {% endif %}
+                                </div>
+                                <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Appliquer/Modifier</button>
+                                <button type="reset" class="btn btn-secondary">Annuler</button>
+                                </div>
+                            </form><!-- Vertical Form -->
+                      </div>
+                    </div>
+                  </div>
+                </div>        
+              </div>
+            </div>
+          </div>
+        </section>
+        </div>
+      </div>
+  </main>
+</center>
+{%endblock%}
