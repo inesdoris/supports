@@ -66,19 +66,3 @@ def run():
 
     sv = Service(libelle="Réparation d'un équipement informatique", categorie_id=4)
     sv.save()
-
-    ########### ETAT
-    e = EtatDemande(libelle="Envoyée")
-    e.save()
-
-    e = EtatDemande(libelle="En cours")
-    e.save()
-
-    e = EtatDemande(libelle="Terminée")
-    e.save()
-
-    e = EtatDemande(libelle="Approuvée")
-    e.save()
-
-    e = EtatDemande(libelle="Archivée")
-    e.save()

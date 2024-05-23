@@ -355,7 +355,7 @@ def formulaire(request):
         try:
             if request.POST.get('description') != "":
                 description = request.POST.get("description")
-            etat = EtatDemande.objects.get(id=1)
+            etat = EtatDemande.SENT.value
             demandeur = user
             service = Service.objects.get(id=request.POST.get("service"))
             service.categorie = None
@@ -394,7 +394,7 @@ def liste_demandes_recues(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_recues = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Envoyée")).order_by('-date_formulation')
+    demandes_recues = Demande.objects.filter(etat=EtatDemande.SENT.value).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/recues.html", {
         "error": error,
@@ -411,7 +411,7 @@ def liste_demandes_affectees(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_affectees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="En cours")).order_by('-date_formulation')
+    demandes_affectees = Demande.objects.filter(etat=EtatDemande.IN_PROGRESS.value).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/affectees.html", {
         "error": error,
@@ -429,7 +429,7 @@ def liste_demandes_traitees(request):
         return redirect('/login')
     
     user = Utilisateur.objects.get(id=user_id)
-    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Approuvée")).order_by('-date_formulation')
+    demandes_traitees = Demande.objects.filter(etat=EtatDemande.APPROVED.value).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     
     return render(request, "demande/traitees.html", {
@@ -448,7 +448,7 @@ def liste_demandes_envoyees_chef(request):
         return redirect('/login')
     
     user = Utilisateur.objects.get(id=user_id)
-    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Archivée"))
+    demandes_traitees = Demande.objects.filter(etat=EtatDemande.ARCHIVED.value)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     
     return render(request, "demande/envoyer_chef.html", {
@@ -470,7 +470,7 @@ def envoyer_solution(request, demande_id):
 
     if request.method == 'POST':
         if traitement:
-            demande.etat = EtatDemande.objects.get_or_create(libelle="Archivée")[0]
+            demande.etat = EtatDemande.ARCHIVED.value
             demande.save()
             Notifications.objects.create(receiver=demande.demandeur, message=f"La solution à la demande [{demande.description}] vous a été envoyée par l'admin")
             request.session["success"] = "La solution a été envoyée avec succès"
@@ -522,7 +522,7 @@ def chef_agence_dashboard(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=1)).order_by('-date_formulation')
+    demandes = Demande.objects.filter(demandeur=user, etat=EtatDemande.SENT.value).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "chef_agence/dashboard.html", {
         "error": error,
@@ -541,7 +541,7 @@ def chef_agence_demandes_en_attente(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes_en_attente = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=2)).order_by('-date_formulation')
+    demandes_en_attente = Demande.objects.filter(demandeur=user, etat=EtatDemande.IN_PROGRESS.value).order_by('-date_formulation')
 
     return render(request, "chef_agence/demandes_en_attente.html", {
         "error": error,
@@ -560,7 +560,7 @@ def chef_agence_demandes_resolues(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes_resolues = Traiter.objects.filter(demande__demandeur=user).filter(demande__etat=EtatDemande.objects.get(id=5))
+    demandes_resolues = Traiter.objects.filter(demande__demandeur=user).filter(demande__etat=EtatDemande.ARCHIVED.value)
 
     return render(request, "chef_agence/demandes_resolues.html", {
         "error": error,
