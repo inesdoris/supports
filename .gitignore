@@ -7,12 +7,12 @@
 [Ll]ib
 [Ll]ib64
 [Ll]ocal
-# [Ss]cripts
+[Ss]cripts
 pyvenv.cfg
 .venv
 pip-selfcheck.json
 
-DATABASES
+# DATABASES
 __pycache__
 migrations
 
@@ -43,7 +43,7 @@ migrations
 [Ll]ib
 [Ll]ib64
 [Ll]ocal
-# [Ss]cripts
+[Ss]cripts
 pyvenv.cfg
 .venv
 pip-selfcheck.json
