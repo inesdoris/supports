@@ -394,7 +394,7 @@ def liste_demandes_recues(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_recues = Demande.objects.filter(etat=EtatDemande.objects.filter(libelle="Envoyée"))
+    demandes_recues = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Envoyée"))
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/recues.html", {
         "error": error,
@@ -411,7 +411,7 @@ def liste_demandes_affectees(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_affectees = Demande.objects.filter(etat=EtatDemande.objects.filter(libelle="En cours"))
+    demandes_affectees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="En cours"))
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/affectees.html", {
         "error": error,
@@ -429,7 +429,7 @@ def liste_demandes_traitees(request):
         return redirect('/login')
     
     user = Utilisateur.objects.get(id=user_id)
-    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.filter(libelle="Approuvée"))
+    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Approuvée"))
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     
     # Récupérer la solution associée à chaque demande traitée
@@ -482,11 +482,16 @@ def affecter_agent(request, demande_id):
     demande = get_object_or_404(Demande, id=demande_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     if request.method == 'POST':
-        form = AffectationAgentForm(request.POST, instance=demande)
-        if form.is_valid():
-            form.save()
-            Notifications.objects.create(receiver=form.cleaned_data['agent'], message="Une nouvelle demande vous a été affectée")
-            return redirect('liste_demandes_recues')  
+        try:
+            form = AffectationAgentForm(request.POST, instance=demande)
+            if form.is_valid():
+                print(form.cleaned_data)
+                form.save()
+                Notifications.objects.create(receiver=form.cleaned_data['agent'], message="Une nouvelle demande vous a été affectée")
+                return redirect('liste_demandes_recues')
+        except:
+            request.session["error"] = "Selectionner un agent"
+            return redirect(f"/demande/{demande_id}/affecter_agent")
     else:
         form = AffectationAgentForm(instance=demande)
     return render(request, 'demande/affecter_agent.html', {
