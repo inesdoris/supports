@@ -138,28 +138,44 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="/agent">
+        {% if current == "index" %}
+          <a class="nav-link bg-info text-white" href="/agent">
+        {% else %}
+          <a class="nav-link " href="/agent">
+        {% endif %}
           <i class="bi bi-grid"></i>
           <span>Demandes affectées</span>
         </a>
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link " href="/agent/pending">
+        {% if current == "pending" %}
+          <a class="nav-link bg-info text-white" href="/agent/pending">
+        {% else %}
+          <a class="nav-link " href="/agent/pending">
+        {% endif %}
           <i class="bi bi-clock"></i>
           <span>Demandes en cours de traitement</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link " href="/agent/solved">
+        {% if current == "solved" %}
+          <a class="nav-link bg-info text-white" href="/agent/solved">
+        {% else %}
+          <a class="nav-link " href="/agent/solved">
+        {% endif %}
           <i class="bi bi-check-circle"></i>
           <span>Demandes traitées</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link " href="/agent/admin">
+        {% if current == "admin" %}
+          <a class="nav-link bg-info text-white" href="/agent/admin">
+        {% else %}
+          <a class="nav-link " href="/agent/admin">
+        {% endif %}
           <i class="bi bi-clock"></i>
           <span>Demandes envoyées à l'admin</span>
         </a>

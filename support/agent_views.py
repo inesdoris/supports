@@ -16,7 +16,8 @@ def index(request):
         "error": error,
         "success": success,
         "demandes": demandes,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "index"
     })
 
 def pending(request):
@@ -33,7 +34,8 @@ def pending(request):
         "error": error,
         "success": success,
         "demandes": demandes,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "pending"
     })
 
 def solved(request):
@@ -50,7 +52,8 @@ def solved(request):
         "error": error,
         "success": success,
         "demandes": demandes,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "solved"
     })
 
 def admin(request):
@@ -67,7 +70,8 @@ def admin(request):
         "error": error,
         "success": success,
         "traitements": traitements,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "admin"
     })
 
 def mettre_en_traitement(request, id_demande):
