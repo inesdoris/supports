@@ -60,7 +60,7 @@ def admin(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    traitements = Traiter.objects.filter(utilisateur=user).filter(demande__etat__libelle="Approuvée").order_by('-date_traitement')
+    traitements = Traiter.objects.filter(utilisateur=user).filter(demande__etat__libelle__in=["Approuvée", "Archivée"]).order_by('-date_traitement')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_admin.html', {
         "user": user,
