@@ -394,7 +394,7 @@ def liste_demandes_recues(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_recues = Demande.objects.filter(etat=EtatDemande.objects.first())
+    demandes_recues = Demande.objects.filter(etat=EtatDemande.objects.filter(libelle="Envoyée"))
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/recues.html", {
         "error": error,
@@ -411,7 +411,7 @@ def liste_demandes_affectees(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_affectees = Demande.objects.filter(etat=EtatDemande.objects.get(id=2))
+    demandes_affectees = Demande.objects.filter(etat=EtatDemande.objects.filter(libelle="En cours"))
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/affectees.html", {
         "error": error,
@@ -429,7 +429,7 @@ def liste_demandes_traitees(request):
         return redirect('/login')
     
     user = Utilisateur.objects.get(id=user_id)
-    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(id=3))
+    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.filter(libelle="Approuvée"))
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     
     # Récupérer la solution associée à chaque demande traitée
@@ -462,6 +462,7 @@ def envoyer_solution(request, demande_id):
     if traitement:
         solution = traitement.solution
         chef_agent = demande.demandeur  # Par défaut, utilisez le demandeur comme chef agent
+        demande.etat = EtatDemande.objects.get_or_create(libelle="Archivée")[0]
     
     return render(request, "demande/envoyer_solution.html", {
         "error": error,
