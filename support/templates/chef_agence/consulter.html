@@ -30,7 +30,11 @@ Tableau de bord
                         <hr>
                         <div style="display: flex; justify-content: space-between;">
                             <h4>Etat: </h4>
-                            <h4>{{d.etat.libelle}}</h4>
+                            {% if d.etat.libelle == "Archivée" %}
+                              <h4>Terminé</h4>
+                            {% else %}
+                              <h4>{{d.etat.libelle}}</h4>
+                            {% endif %}
                         </div>
                         <hr>
                         {% if d.etat.libelle == "Envoyée" %}

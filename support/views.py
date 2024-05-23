@@ -393,7 +393,7 @@ def liste_demandes_recues(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_recues = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Envoyée"))
+    demandes_recues = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Envoyée")).order_by('-date_traitement')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/recues.html", {
         "error": error,
@@ -410,7 +410,7 @@ def liste_demandes_affectees(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_affectees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="En cours"))
+    demandes_affectees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="En cours")).order_by('-date_traitement')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/affectees.html", {
         "error": error,
@@ -428,7 +428,7 @@ def liste_demandes_traitees(request):
         return redirect('/login')
     
     user = Utilisateur.objects.get(id=user_id)
-    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Approuvée"))
+    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Approuvée")).order_by('-date_traitement')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     
     return render(request, "demande/traitees.html", {
@@ -576,7 +576,9 @@ def consulter_demande(request, id):
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     d = Demande.objects.get(id=id)
-    s = Traiter.objects.get(demande=d)
+    s= None
+    if d.etat.libelle  == 'Archivée':
+        s = Traiter.objects.get(demande=d)
     return render(request, "chef_agence/consulter.html", {
         "error": error,
         "success": success,
