@@ -53,7 +53,7 @@ class Service(models.Model):
         return f"{self.libelle}"
 
 
-class Demande(models.Model):
+class Demande(models.Model): 
     description = models.CharField(max_length=150)
     etat = models.ForeignKey(EtatDemande, on_delete=models.CASCADE)
     demandeur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
