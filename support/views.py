@@ -474,7 +474,7 @@ def envoyer_solution(request, demande_id):
             demande.save()
             Notifications.objects.create(receiver=demande.demandeur, message=f"La solution à la demande [{demande.description}] vous a été envoyée par l'admin")
             request.session["success"] = "La solution a été envoyée avec succès"
-            return redirect("/demande/traitees")
+            return redirect("/demande/envoyees_chef")
 
     return render(request, "demande/envoyer_solution.html", {
         "error": error,
