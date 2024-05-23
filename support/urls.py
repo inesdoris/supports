@@ -46,6 +46,7 @@ urlpatterns = [
     path('demande/recues', views.liste_demandes_recues, name='liste_demandes_recues'),
     path('demande/affectees', views.liste_demandes_affectees, name='liste_demandes_affectees'),
     path('demande/traitees', views.liste_demandes_traitees, name='liste_demandes_traitees'),
+    path('demande/envoyees_chef', views.liste_demandes_envoyees_chef, name='liste_demandes_envoyees_chef'),
     path('demande/<int:demande_id>/affecter_agent', views.affecter_agent, name='affecter_agent'),
     path('demande/<int:demande_id>/envoyer_solution', views.envoyer_solution, name='envoyer_solution'),
 ]

@@ -58,7 +58,7 @@ class Demande(models.Model):
     demandeur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True)
     date_formulation = models.DateTimeField(auto_now_add=True)
-    agent = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, related_name='assigned_demandes', null=True, blank=True)
+    agent = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='assigned_demandes', null=True, blank=True)
 
 class MessageDemande(models.Model):
     contenu = models.CharField(max_length=200)
