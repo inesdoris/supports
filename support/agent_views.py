@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import *
+import django
 
 def index(request):
     user_id = request.session.get('user_id', None)
@@ -8,7 +9,7 @@ def index(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes = Demande.objects.filter(etat__libelle="Envoyée").filter(agent=user)
+    demandes = Demande.objects.filter(etat__libelle="Envoyée").filter(agent=user).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_affectees.html', {
         "user": user,
@@ -25,7 +26,7 @@ def pending(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes = Demande.objects.filter(etat__libelle="En cours").filter(agent=user)
+    demandes = Demande.objects.filter(etat__libelle="En cours").filter(agent=user).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_en_cours.html', {
         "user": user,
@@ -43,7 +44,7 @@ def solved(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes = Demande.objects.filter(etat__libelle="Terminée").filter(agent=user)
+    demandes = Demande.objects.filter(etat__libelle="Terminée").filter(agent=user).order_by('-date_formulation')
     return render(request, 'agent/demandes_traitees.html', {
         "user": user,
         "error": error,
@@ -59,7 +60,7 @@ def admin(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    traitements = Traiter.objects.filter(utilisateur=user).filter(demande__etat__libelle="Approuvée")
+    traitements = Traiter.objects.filter(utilisateur=user).filter(demande__etat__libelle="Approuvée").order_by('-date_traitement')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_admin.html', {
         "user": user,
@@ -100,6 +101,10 @@ def abolir_traitement(request, id_demande):
             raise("error")
         traitement = Traiter.objects.get(demande=demande) if Traiter.objects.filter(demande=demande) else None
         if traitement and traitement.solution :
+            # modification de la date de traitement
+            traitement.date_traitement = django.utils.timezone.now()
+            traitement.save()
+            # modification de la demande
             demande.etat = EtatDemande.objects.get(libelle="Terminée")
             demande.save()
             request.session["success"] = f"La demande n°{demande.id} a été mise en fin de traitement"
