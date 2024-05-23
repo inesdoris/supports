@@ -12,7 +12,8 @@ pyvenv.cfg
 .venv
 pip-selfcheck.json
 
-DATABASES
+.db
+*.db
 __pycache__
 migrations
 
@@ -694,5 +695,3 @@ Temporary Items
 instance/*
 !instance/.gitignore
 .webassets-cache
-
-__pycache__
