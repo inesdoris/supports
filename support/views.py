@@ -431,18 +431,30 @@ def liste_demandes_traitees(request):
     demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Approuvée"))
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     
-    # Récupérer la solution associée à chaque demande traitée
-    solutions = {}
-    for demande in demandes_traitees:
-        traitement = Traiter.objects.filter(demande=demande).first()
-        solutions[demande.id] = traitement.solution if traitement else None
-    
     return render(request, "demande/traitees.html", {
         "error": error,
         "success": success,
         "user": user,
         "demandes_traitees": demandes_traitees,
-        "solutions": solutions,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+    })
+    
+def liste_demandes_envoyees_chef(request):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    
+    user = Utilisateur.objects.get(id=user_id)
+    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(libelle="Archivée"))
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    
+    return render(request, "demande/envoyer_chef.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "demandes_traitees": demandes_traitees,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
@@ -452,28 +464,23 @@ def envoyer_solution(request, demande_id):
     success = request.session.pop('success', None)
     user = Utilisateur.objects.get(id=user_id)
     demande = Demande.objects.get(id=demande_id)
-    solution = ""
-    chef_agent = None
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    traitement = Traiter.objects.filter(demande=demande).first()
 
-    if request.methode == 'POST':
-        # Récupérer la solution et le chef agent associés à la demande sélectionnée
-        traitement = Traiter.objects.filter(demande=demande).first()
-        nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    if request.method == 'POST':
         if traitement:
-            solution = traitement.solution
-            chef_agent = demande.demandeur  # Par défaut, utilisez le demandeur comme chef agent
             demande.etat = EtatDemande.objects.get_or_create(libelle="Archivée")[0]
-            Notifications.objects.create(receiver=demande.demandeur, message="Une nouvelle solution vous a été envoyée")
+            demande.save()
+            Notifications.objects.create(receiver=demande.demandeur, message=f"La solution à la demande [{demande.description}] vous a été envoyée par l'admin")
             request.session["success"] = "La solution a été envoyée avec succès"
-            return redirect("demande/traitees")
+            return redirect("/demande/traitees")
 
     return render(request, "demande/envoyer_solution.html", {
         "error": error,
         "success": success,
         "user": user,
         "demande": demande,
-        "solution": solution,
-        "chef_agent": chef_agent,
+        "traitement": traitement,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })  
     

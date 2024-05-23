@@ -18,7 +18,6 @@ Liste des demandes traitées
                 <th scope="col">Demandeur</th>
                 <th scope="col">Service</th>
                 <th scope="col">Agent</th>
-                <th scope="col">Solution</th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
@@ -26,18 +25,23 @@ Liste des demandes traitées
             {% for demande in demandes_traitees %}
             <tr>
                 <td>{{ demande.description }}</td>
-                <td>{{ demande.etat.libelle }}</td>
+                <td>Terminée</td>
                 <td>{{ demande.demandeur }}</td>
                 <td>{{ demande.service.libelle }}</td>
                 <td>{{ demande.agent }}</td>
-                <td>{{ solutions.demande.id }}</td>
                 <td>
                     <div class="text-end">
+                        {% if demande.etat.libelle == "Archivée" %}
+                                <button type="button" class="btn btn-light disabled">
+                                    <i class="bi bi-eye"></i> Voir la solution
+                                </button>
+                        {% else %}
                         <a href="{% url 'envoyer_solution' demande.id %}">
                             <button type="button" class="btn btn-light">
-                                <i class="bi bi-send"></i> Envoyer
+                                <i class="bi bi-eye"></i> Voir la solution
                             </button>
                         </a>
+                        {% endif %}
                     </div>
                 </td>
             </tr>
