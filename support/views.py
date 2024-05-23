@@ -557,7 +557,7 @@ def chef_agence_demandes_resolues(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes_resolues = Traiter.objects.filter(demande__demandeur=user, demande__etat=EtatDemande.objects.get(id=5))
+    demandes_resolues = Traiter.objects.filter(demande__demandeur=user).filter(demande__etat=EtatDemande.objects.get(id=5))
 
     return render(request, "chef_agence/demandes_resolues.html", {
         "error": error,
@@ -576,7 +576,7 @@ def consulter_demande(request, id):
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     d = Demande.objects.get(id=id)
-    s = Traiter.objects.filter(demande=d)
+    s = Traiter.objects.get(demande=d)
     return render(request, "chef_agence/consulter.html", {
         "error": error,
         "success": success,
