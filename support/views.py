@@ -505,7 +505,7 @@ def chef_agence_dashboard(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes = Demande.objects.filter(demandeur=user)
+    demandes = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=1)).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "chef_agence/dashboard.html", {
         "error": error,
@@ -523,7 +523,7 @@ def chef_agence_demandes_en_attente(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes_en_attente = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=2))
+    demandes_en_attente = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=2)).order_by('-date_formulation')
 
     return render(request, "chef_agence/demandes_en_attente.html", {
         "error": error,
@@ -541,7 +541,7 @@ def chef_agence_demandes_resolues(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes_resolues = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=3))
+    demandes_resolues = Traiter.objects.filter(demande__demandeur=user, demande__etat=EtatDemande.objects.get(id=5))
 
     return render(request, "chef_agence/demandes_resolues.html", {
         "error": error,
@@ -560,12 +560,14 @@ def consulter_demande(request, id):
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     d = Demande.objects.get(id=id)
+    s = Traiter.objects.filter(demande=d)
     return render(request, "chef_agence/consulter.html", {
         "error": error,
         "success": success,
         "user": user,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
         "d": d,
+        "s": s
     })
     
 def modifier_demande(request, demande_id):

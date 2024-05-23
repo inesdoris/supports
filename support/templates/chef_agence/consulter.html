@@ -34,39 +34,45 @@ Tableau de bord
                         </div>
                         <hr>
                         {% if d.etat.libelle == "Envoyée" %}
-                        <div style="display: flex; justify-content: space-between;">
-                          <h4>Actions: </h4>
-                          <h4>
-                            <a href="{% url 'modifier_demande' d.id %}">
-                              <button type="button" class="btn btn-light">
-                                  <i class="bi bi-pencil"></i> Modifier
-                              </button>
-                            </a>
-                          </h4>
-                          <h4>
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDemand{{d.id}}">
-                              <i class="bi bi-trash">Supprimer</i>
-                            </button>
-                            <div class="modal fade" id="deleteDemand{{d.id}}" tabindex="-1">
-                              <div class="modal-dialog">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 class="modal-title">Suppression de la demande</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                  </div>
-                                  <div class="modal-body">
-                                    Êtes-vous sûr ?
-                                  </div>
-                                  <div class="modal-footer">
-                                      <a href="/chef_agence/{{d.id}}/supprimer_demande"><button type="button" class="btn btn-danger">Oui</button></a>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+                            <div style="display: flex; justify-content: space-between;">
+                              <h4>Actions: </h4>
+                              <h4>
+                                <a href="{% url 'modifier_demande' d.id %}">
+                                  <button type="button" class="btn btn-light">
+                                      <i class="bi bi-pencil"></i> Modifier
+                                  </button>
+                                </a>
+                              </h4>
+                              <h4>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDemand{{d.id}}">
+                                  <i class="bi bi-trash">Supprimer</i>
+                                </button>
+                                <div class="modal fade" id="deleteDemand{{d.id}}" tabindex="-1">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title">Suppression de la demande</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        Êtes-vous sûr ?
+                                      </div>
+                                      <div class="modal-footer">
+                                          <a href="/chef_agence/{{d.id}}/supprimer_demande"><button type="button" class="btn btn-danger">Oui</button></a>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
+                              </h4>
                             </div>
-                          </h4>
                           {% endif %}
-                      </div>
+                          {% if d.etat.libelle == "Archivée" %}
+                            <div style="display: flex; justify-content: space-between;">
+                                <h4>Solution: </h4>
+                                <textarea readonly style="height: 100px; width: 350px; font-size: 20px">{{s.solution}}</textarea>
+                            </div>
+                          {%endif%}
 
                       </div>
                     </div>
