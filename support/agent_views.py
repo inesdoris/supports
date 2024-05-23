@@ -9,7 +9,7 @@ def index(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes = Demande.objects.filter(etat__libelle="Envoyée").filter(agent=user).order_by('-date_formulation')
+    demandes = Demande.objects.filter(etat=EtatDemande.SENT.value).filter(agent=user).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_affectees.html', {
         "user": user,
@@ -27,7 +27,7 @@ def pending(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes = Demande.objects.filter(etat__libelle="En cours").filter(agent=user).order_by('-date_formulation')
+    demandes = Demande.objects.filter(etat=EtatDemande.IN_PROGRESS.value).filter(agent=user).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_en_cours.html', {
         "user": user,
@@ -46,7 +46,7 @@ def solved(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes = Demande.objects.filter(etat__libelle="Terminée").filter(agent=user).order_by('-date_formulation')
+    demandes = Demande.objects.filter(etat=EtatDemande.DONE.value).filter(agent=user).order_by('-date_formulation')
     return render(request, 'agent/demandes_traitees.html', {
         "user": user,
         "error": error,
@@ -63,7 +63,7 @@ def admin(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    traitements = Traiter.objects.filter(utilisateur=user).filter(demande__etat__libelle__in=["Approuvée", "Archivée"]).order_by('-date_traitement')
+    traitements = Traiter.objects.filter(utilisateur=user).filter(demande__etat__in=[EtatDemande.APPROVED.value, EtatDemande.ARCHIVED.value]).order_by('-date_traitement')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_admin.html', {
         "user": user,
