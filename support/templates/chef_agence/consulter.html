@@ -30,14 +30,14 @@ Tableau de bord
                         <hr>
                         <div style="display: flex; justify-content: space-between;">
                             <h4>Etat: </h4>
-                            {% if d.etat.libelle == "Archivée" %}
+                            {% if d.etat == "Archivée" %}
                               <h4>Terminé</h4>
                             {% else %}
-                              <h4>{{d.etat.libelle}}</h4>
+                              <h4>{{d.etat}}</h4>
                             {% endif %}
                         </div>
                         <hr>
-                        {% if d.etat.libelle == "Envoyée" %}
+                        {% if d.etat == "Envoyée" %}
                             <div style="display: flex; justify-content: space-between;">
                               <h4>Actions: </h4>
                               <h4>
@@ -71,7 +71,7 @@ Tableau de bord
                               </h4>
                             </div>
                           {% endif %}
-                          {% if d.etat.libelle == "Archivée" %}
+                          {% if d.etat == "Archivée" %}
                             <div style="display: flex; justify-content: space-between;">
                                 <h4>Solution: </h4>
                                 <textarea readonly style="height: 100px; width: 350px; font-size: 20px">{{s.solution}}</textarea>
