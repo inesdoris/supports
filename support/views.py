@@ -347,7 +347,7 @@ def formulaire(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+
     demandeur = user
     service = Service.objects.all()
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
@@ -366,7 +366,7 @@ def formulaire(request):
             d.save()
             nouvelle_notification = Notifications(
                 receiver=Utilisateur.objects.get(profil__id=1),
-                message="Vous avez reçue une nouvelle demande !",
+                message=f"Vous avez reçue une nouvelle demande de la part de {'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} !",
                 date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
             )
             nouvelle_notification.save()
@@ -384,7 +384,6 @@ def formulaire(request):
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
         "demandeur": demandeur,
         "service": service,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
     
 def liste_demandes_recues(request):
@@ -589,11 +588,25 @@ def modifier_demande(request, demande_id):
     user = Utilisateur.objects.get(id=user_id)
     demande = get_object_or_404(Demande, id=demande_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    
+
     if request.method == 'POST':
         form = DemandeForm(request.POST, instance=demande)
         if form.is_valid():
             form.save()
+            nouvelle_notification = Notifications(
+                receiver=Utilisateur.objects.get(profil__id=1),
+                message=f"{'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} a modifié sa demande du {demande.date_formulation.strftime('%d-%m-%Y à %H:%M:%S')} !",
+                date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
+            )
+            nouvelle_notification.save()
+            if demande.agent:
+                nouvelle_notification = Notifications(
+                    receiver=demande.agent,
+                    message=f"{'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} a modifié sa demande du {demande.date_formulation.strftime('%d-%m-%Y à %H:%M:%S')} !",
+                    date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
+                )
+                nouvelle_notification.save()
+            request.session["success"] = "La modification s'est bien déroulée"
             return redirect('consulter_demande', id=demande.id)  # Redirige vers la page de consultation
     else:
         form = DemandeForm(instance=demande)
@@ -608,8 +621,27 @@ def modifier_demande(request, demande_id):
         })
 
 def supprimer_demande(request, id):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    user = Utilisateur.objects.get(id=user_id)
     d = Demande.objects.get(id=id)
     d.delete()
+    nouvelle_notification = Notifications(
+        receiver=Utilisateur.objects.get(profil__id=1),
+        message=f"{'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} a supprimé sa demande du {d.date_formulation.strftime('%d-%m-%Y à %H:%M:%S')} !",
+        date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
+    )
+    nouvelle_notification.save()
+    if d.agent:
+        nouvelle_notification = Notifications(
+            receiver=d.agent,
+            message=f"{'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} a supprimé sa demande du {d.date_formulation.strftime('%d-%m-%Y à %H:%M:%S')} !",
+            date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
+        )
+        nouvelle_notification.save()
     request.session["success"] = "La demande a bien été supprimée !!"
     return redirect("/chef_agence/dashboard")
 
