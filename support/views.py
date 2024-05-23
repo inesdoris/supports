@@ -456,14 +456,18 @@ def envoyer_solution(request, demande_id):
     solution = ""
     chef_agent = None
 
-    # Récupérer la solution et le chef agent associés à la demande sélectionnée
-    traitement = Traiter.objects.filter(demande=demande).first()
-    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    if traitement:
-        solution = traitement.solution
-        chef_agent = demande.demandeur  # Par défaut, utilisez le demandeur comme chef agent
-        demande.etat = EtatDemande.objects.get_or_create(libelle="Archivée")[0]
-    
+    if request.methode == 'POST':
+        # Récupérer la solution et le chef agent associés à la demande sélectionnée
+        traitement = Traiter.objects.filter(demande=demande).first()
+        nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+        if traitement:
+            solution = traitement.solution
+            chef_agent = demande.demandeur  # Par défaut, utilisez le demandeur comme chef agent
+            demande.etat = EtatDemande.objects.get_or_create(libelle="Archivée")[0]
+            Notifications.objects.create(receiver=demande.demandeur, message="Une nouvelle solution vous a été envoyée")
+            request.session["success"] = "La solution a été envoyée avec succès"
+            return redirect("demande/traitees")
+
     return render(request, "demande/envoyer_solution.html", {
         "error": error,
         "success": success,
