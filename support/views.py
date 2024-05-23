@@ -581,7 +581,7 @@ def consulter_demande(request, id):
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     d = Demande.objects.get(id=id)
     s= None
-    if d.etat.libelle  == 'Archivée':
+    if d.etat  == EtatDemande.ARCHIVED.value :
         s = Traiter.objects.get(demande=d)
     return render(request, "chef_agence/consulter.html", {
         "error": error,
