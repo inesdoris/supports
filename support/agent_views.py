@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import *
-import django
+from django.utils import timezone
 
 def index(request):
     user_id = request.session.get('user_id', None)
@@ -102,7 +102,7 @@ def abolir_traitement(request, id_demande):
         traitement = Traiter.objects.get(demande=demande) if Traiter.objects.filter(demande=demande) else None
         if traitement and traitement.solution :
             # modification de la date de traitement
-            traitement.date_traitement = django.utils.timezone.now()
+            traitement.date_traitement = timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone())
             traitement.save()
             # modification de la demande
             demande.etat = EtatDemande.objects.get(libelle="Terminée")
