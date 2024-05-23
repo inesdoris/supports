@@ -384,6 +384,7 @@ def formulaire(request):
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
         "demandeur": demandeur,
         "service": service,
+        "current": "form"
     })
     
 def liste_demandes_recues(request):
@@ -528,7 +529,8 @@ def chef_agence_dashboard(request):
         "success": success,
         "user": user,
         "demandes": demandes,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "index"
     })
 
 def chef_agence_demandes_en_attente(request):
@@ -546,7 +548,8 @@ def chef_agence_demandes_en_attente(request):
         "success": success,
         "user": user,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
-        "demandes_en_attente": demandes_en_attente
+        "demandes_en_attente": demandes_en_attente,
+        "current": "pending"
     })
 
 def chef_agence_demandes_resolues(request):
@@ -564,7 +567,8 @@ def chef_agence_demandes_resolues(request):
         "success": success,
         "user": user,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
-        "demandes_resolues": demandes_resolues
+        "demandes_resolues": demandes_resolues,
+        "current": "solved"
     })
 
 def consulter_demande(request, id):
