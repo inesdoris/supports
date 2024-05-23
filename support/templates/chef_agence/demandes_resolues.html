@@ -35,9 +35,9 @@ Tableau de bord
                     <tbody>
                         {%for d in demandes_resolues %}
                         <tr>
-                            <td>{{d.date_formulation}} </td>
-                            <td>{{d.service.libelle}} </td>
-                            <td>{{d.etat.libelle}} </td>
+                            <td>{{d.demande.date_formulation}} </td>
+                            <td>{{d.demande.service.libelle}} </td>
+                            <td>Traitée</td>
                             <td>
                                 <div class="text-end">
                                     <a href="/demande/{{d.id}}/consulter">

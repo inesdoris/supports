@@ -27,7 +27,7 @@ Traitement d'une demande
                             {% csrf_token %}
                                 <div class="col-12">
                                     <p><span class="text-danger"><b><u>Descriptif de la demande :</u></b></span> {{description_demande}}</p>
-                                    {% if solution_existante != "True" or solution_existante != None %}
+                                    {% if solution_existante != "True" or solution_existante != "" %}  <!-- None has been discarded -->
                                      <textarea class="form-control" id="floatingTextarea" style="height: 100px;" placeholder="Décrivez la solution spécifique à la demande n°{{id_demande}}" required name="solution_detaillee">{{solution_existante}}</textarea>
                                     {% else %}
                                      <textarea class="form-control" id="floatingTextarea" style="height: 100px;" placeholder="Décrivez la solution spécifique à la demande n°{{id_demande}}" required name="solution_detaillee"></textarea>

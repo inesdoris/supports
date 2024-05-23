@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Liste des demandes envoyées
+{% endblock %}
+
+{% block main %}
+<div class="card p-3">
+    <div class="pagetitle">
+        <h1>Liste des demandes envoyées</h1>
+    </div>
+    <table class="table datatable">
+        <thead>
+            <tr>
+                <th scope="col">Description</th>
+                <th scope="col">Demandeur</th>
+                <th scope="col">Service</th>
+                <th scope="col">Agent</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for demande in demandes_traitees %}
+            <tr>
+                <td>{{ demande.description }}</td>
+                <td>{{ demande.demandeur }}</td>
+                <td>{{ demande.service.libelle }}</td>
+                <td>{{ demande.agent }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

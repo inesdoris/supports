@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import *
+from django.utils import timezone
 
 def index(request):
     user_id = request.session.get('user_id', None)
@@ -8,14 +9,15 @@ def index(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes = Demande.objects.filter(etat__libelle="Envoyée").filter(agent=user)
+    demandes = Demande.objects.filter(etat=EtatDemande.SENT.value).filter(agent=user).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_affectees.html', {
         "user": user,
         "error": error,
         "success": success,
         "demandes": demandes,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "index"
     })
 
 def pending(request):
@@ -25,14 +27,15 @@ def pending(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes = Demande.objects.filter(etat__libelle="En cours").filter(agent=user)
+    demandes = Demande.objects.filter(etat=EtatDemande.IN_PROGRESS.value).filter(agent=user).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_en_cours.html', {
         "user": user,
         "error": error,
         "success": success,
         "demandes": demandes,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "pending"
     })
 
 def solved(request):
@@ -43,13 +46,14 @@ def solved(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes = Demande.objects.filter(etat__libelle="Terminée").filter(agent=user)
+    demandes = Demande.objects.filter(etat=EtatDemande.DONE.value).filter(agent=user).order_by('-date_formulation')
     return render(request, 'agent/demandes_traitees.html', {
         "user": user,
         "error": error,
         "success": success,
         "demandes": demandes,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "solved"
     })
 
 def admin(request):
@@ -59,14 +63,15 @@ def admin(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    traitements = Traiter.objects.filter(utilisateur=user).filter(demande__etat__libelle="Approuvée")
+    traitements = Traiter.objects.filter(utilisateur=user).filter(demande__etat__in=[EtatDemande.APPROVED.value, EtatDemande.ARCHIVED.value]).order_by('-date_traitement')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, 'agent/demandes_admin.html', {
         "user": user,
         "error": error,
         "success": success,
         "traitements": traitements,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "admin"
     })
 
 def mettre_en_traitement(request, id_demande):
@@ -79,7 +84,7 @@ def mettre_en_traitement(request, id_demande):
         if demande.agent != user:
             raise("error")
         if demande.service.categorie :
-            demande.etat = EtatDemande.objects.get(libelle="En cours")
+            demande.etat = EtatDemande.IN_PROGRESS.value
             demande.save()
             request.session["success"] = f"La demande n°{demande.id} a été mise en cours de traitement"
             return redirect("/agent/pending")
@@ -100,7 +105,11 @@ def abolir_traitement(request, id_demande):
             raise("error")
         traitement = Traiter.objects.get(demande=demande) if Traiter.objects.filter(demande=demande) else None
         if traitement and traitement.solution :
-            demande.etat = EtatDemande.objects.get(libelle="Terminée")
+            # modification de la date de traitement
+            traitement.date_traitement = timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone())
+            traitement.save()
+            # modification de la demande
+            demande.etat = EtatDemande.DONE.value
             demande.save()
             request.session["success"] = f"La demande n°{demande.id} a été mise en fin de traitement"
             return redirect("/agent/solved")
@@ -118,7 +127,7 @@ def traiter_demande(request, id_demande):
     services = Service.objects.exclude(libelle="...")
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     demande = Demande.objects.get(id=id_demande)
-    solution_precedemment_renseignee = Traiter.objects.get(demande=demande).solution if Traiter.objects.filter(demande=demande) else None
+    solution_precedemment_renseignee = Traiter.objects.get(demande=demande).solution if Traiter.objects.filter(demande=demande) else "" # None has been discared
     if demande.agent==user:
         if request.method == "POST":
             solution = request.POST.get("solution_detaillee")
@@ -206,7 +215,7 @@ def notifier_admin(request, id_demande):
     try:
         if demande.agent != user:
             raise("error")
-        demande.etat = EtatDemande.objects.get_or_create(libelle="Approuvée")[0]
+        demande.etat = EtatDemande.APPROVED.value
         demande.save()
         Notifications.objects.create(receiver=Utilisateur.objects.filter(profil__id=1).first(), message=f"Une proposition de solution à l'une des demandes de {'M.' if demande.demandeur.sexe else 'Mme'} {demande.demandeur.nom} {demande.demandeur.prenom} vous a été envoyée par l'agent {user.nom} {user.prenom}.")
         request.session["success"] = "La solution a été envoyée avec succès."
