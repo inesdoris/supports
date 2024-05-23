@@ -84,7 +84,7 @@ def mettre_en_traitement(request, id_demande):
         if demande.agent != user:
             raise("error")
         if demande.service.categorie :
-            demande.etat = EtatDemande.objects.get(libelle="En cours")
+            demande.etat = EtatDemande.IN_PROGRESS.value
             demande.save()
             request.session["success"] = f"La demande n°{demande.id} a été mise en cours de traitement"
             return redirect("/agent/pending")
@@ -109,7 +109,7 @@ def abolir_traitement(request, id_demande):
             traitement.date_traitement = timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone())
             traitement.save()
             # modification de la demande
-            demande.etat = EtatDemande.objects.get(libelle="Terminée")
+            demande.etat = EtatDemande.DONE.value
             demande.save()
             request.session["success"] = f"La demande n°{demande.id} a été mise en fin de traitement"
             return redirect("/agent/solved")
@@ -215,7 +215,7 @@ def notifier_admin(request, id_demande):
     try:
         if demande.agent != user:
             raise("error")
-        demande.etat = EtatDemande.objects.get_or_create(libelle="Approuvée")[0]
+        demande.etat = EtatDemande.APPROVED.value
         demande.save()
         Notifications.objects.create(receiver=Utilisateur.objects.filter(profil__id=1).first(), message=f"Une proposition de solution à l'une des demandes de {'M.' if demande.demandeur.sexe else 'Mme'} {demande.demandeur.nom} {demande.demandeur.prenom} vous a été envoyée par l'agent {user.nom} {user.prenom}.")
         request.session["success"] = "La solution a été envoyée avec succès."
