@@ -27,7 +27,7 @@ Liste des demandes reçues
                 <td>{{ d.etat.libelle }}</td>
                 <td>{{ d.demandeur.prenom }} {{ d.demandeur.nom }}</td>
                 <td>{{ d.service.libelle }}</td>
-                <td>{% if d.agent %}{{ d.agent.prenom }} {{ d.agent.nom }}{% else %}Non affecté{% endif %}</td> <!-- Ajout de l'agent -->
+                <td>{% if d.agent %}{{ d.agent.prenom }} {{ d.agent.nom }}{% else %}Non affectée{% endif %}</td> <!-- Ajout de l'agent -->
                 <td>
                     <div class="text-end">
                         <a href="{% url 'affecter_agent' d.id %}">

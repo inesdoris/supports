@@ -347,7 +347,7 @@ def formulaire(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+
     demandeur = user
     service = Service.objects.all()
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
@@ -355,7 +355,7 @@ def formulaire(request):
         try:
             if request.POST.get('description') != "":
                 description = request.POST.get("description")
-            etat = EtatDemande.objects.get(id=1)
+            etat = EtatDemande.SENT.value
             demandeur = user
             service = Service.objects.get(id=request.POST.get("service"))
             service.categorie = None
@@ -366,7 +366,7 @@ def formulaire(request):
             d.save()
             nouvelle_notification = Notifications(
                 receiver=Utilisateur.objects.get(profil__id=1),
-                message="Vous avez reçue une nouvelle demande !",
+                message=f"Vous avez reçue une nouvelle demande de la part de {'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} !",
                 date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
             )
             nouvelle_notification.save()
@@ -384,7 +384,7 @@ def formulaire(request):
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
         "demandeur": demandeur,
         "service": service,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "current": "form"
     })
     
 def liste_demandes_recues(request):
@@ -394,7 +394,7 @@ def liste_demandes_recues(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_recues = Demande.objects.filter(etat=EtatDemande.objects.first())
+    demandes_recues = Demande.objects.filter(etat=EtatDemande.SENT.value).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/recues.html", {
         "error": error,
@@ -411,7 +411,7 @@ def liste_demandes_affectees(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes_affectees = Demande.objects.filter(etat=EtatDemande.objects.get(id=2))
+    demandes_affectees = Demande.objects.filter(etat=EtatDemande.IN_PROGRESS.value).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "demande/affectees.html", {
         "error": error,
@@ -429,21 +429,33 @@ def liste_demandes_traitees(request):
         return redirect('/login')
     
     user = Utilisateur.objects.get(id=user_id)
-    demandes_traitees = Demande.objects.filter(etat=EtatDemande.objects.get(id=3))
+    demandes_traitees = Demande.objects.filter(etat=EtatDemande.APPROVED.value).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    
-    # Récupérer la solution associée à chaque demande traitée
-    solutions = {}
-    for demande in demandes_traitees:
-        traitement = Traiter.objects.filter(demande=demande).first()
-        solutions[demande.id] = traitement.solution if traitement else None
     
     return render(request, "demande/traitees.html", {
         "error": error,
         "success": success,
         "user": user,
         "demandes_traitees": demandes_traitees,
-        "solutions": solutions,
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+    })
+    
+def liste_demandes_envoyees_chef(request):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    
+    user = Utilisateur.objects.get(id=user_id)
+    demandes_traitees = Demande.objects.filter(etat=EtatDemande.ARCHIVED.value)
+    nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
+    
+    return render(request, "demande/envoyer_chef.html", {
+        "error": error,
+        "success": success,
+        "user": user,
+        "demandes_traitees": demandes_traitees,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })
 
@@ -453,23 +465,23 @@ def envoyer_solution(request, demande_id):
     success = request.session.pop('success', None)
     user = Utilisateur.objects.get(id=user_id)
     demande = Demande.objects.get(id=demande_id)
-    solution = ""
-    chef_agent = None
-
-    # Récupérer la solution et le chef agent associés à la demande sélectionnée
-    traitement = Traiter.objects.filter(demande=demande).first()
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    if traitement:
-        solution = traitement.solution
-        chef_agent = demande.demandeur  # Par défaut, utilisez le demandeur comme chef agent
-    
+    traitement = Traiter.objects.filter(demande=demande).first()
+
+    if request.method == 'POST':
+        if traitement:
+            demande.etat = EtatDemande.ARCHIVED.value
+            demande.save()
+            Notifications.objects.create(receiver=demande.demandeur, message=f"La solution à la demande [{demande.description}] vous a été envoyée par l'admin")
+            request.session["success"] = "La solution a été envoyée avec succès"
+            return redirect("/demande/envoyees_chef")
+
     return render(request, "demande/envoyer_solution.html", {
         "error": error,
         "success": success,
         "user": user,
         "demande": demande,
-        "solution": solution,
-        "chef_agent": chef_agent,
+        "traitement": traitement,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications
     })  
     
@@ -481,11 +493,16 @@ def affecter_agent(request, demande_id):
     demande = get_object_or_404(Demande, id=demande_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     if request.method == 'POST':
-        form = AffectationAgentForm(request.POST, instance=demande)
-        if form.is_valid():
-            form.save()
-            Notifications.objects.create(receiver=form.cleaned_data['agent'], message="Une nouvelle demande vous a été affectée")
-            return redirect('liste_demandes_recues')  
+        try:
+            form = AffectationAgentForm(request.POST, instance=demande)
+            if form.is_valid():
+                print(form.cleaned_data)
+                form.save()
+                Notifications.objects.create(receiver=form.cleaned_data['agent'], message="Une nouvelle demande vous a été affectée")
+                return redirect('liste_demandes_recues')
+        except:
+            request.session["error"] = "Selectionner un agent"
+            return redirect(f"/demande/{demande_id}/affecter_agent")
     else:
         form = AffectationAgentForm(instance=demande)
     return render(request, 'demande/affecter_agent.html', {
@@ -505,14 +522,15 @@ def chef_agence_dashboard(request):
     if not user_id:
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
-    demandes = Demande.objects.filter(demandeur=user)
+    demandes = Demande.objects.filter(demandeur=user, etat=EtatDemande.SENT.value).order_by('-date_formulation')
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     return render(request, "chef_agence/dashboard.html", {
         "error": error,
         "success": success,
         "user": user,
         "demandes": demandes,
-        "nombre_nouvelles_notifications": nombre_nouvelles_notifications
+        "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
+        "current": "index"
     })
 
 def chef_agence_demandes_en_attente(request):
@@ -523,14 +541,15 @@ def chef_agence_demandes_en_attente(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes_en_attente = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=2))
+    demandes_en_attente = Demande.objects.filter(demandeur=user, etat=EtatDemande.IN_PROGRESS.value).order_by('-date_formulation')
 
     return render(request, "chef_agence/demandes_en_attente.html", {
         "error": error,
         "success": success,
         "user": user,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
-        "demandes_en_attente": demandes_en_attente
+        "demandes_en_attente": demandes_en_attente,
+        "current": "pending"
     })
 
 def chef_agence_demandes_resolues(request):
@@ -541,14 +560,15 @@ def chef_agence_demandes_resolues(request):
         return redirect('/login')
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    demandes_resolues = Demande.objects.filter(demandeur=user, etat=EtatDemande.objects.get(id=3))
+    demandes_resolues = Traiter.objects.filter(demande__demandeur=user).filter(demande__etat=EtatDemande.ARCHIVED.value)
 
     return render(request, "chef_agence/demandes_resolues.html", {
         "error": error,
         "success": success,
         "user": user,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
-        "demandes_resolues": demandes_resolues
+        "demandes_resolues": demandes_resolues,
+        "current": "solved"
     })
 
 def consulter_demande(request, id):
@@ -560,12 +580,16 @@ def consulter_demande(request, id):
     user = Utilisateur.objects.get(id=user_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
     d = Demande.objects.get(id=id)
+    s= None
+    if d.etat  == EtatDemande.ARCHIVED.value :
+        s = Traiter.objects.get(demande=d)
     return render(request, "chef_agence/consulter.html", {
         "error": error,
         "success": success,
         "user": user,
         "nombre_nouvelles_notifications": nombre_nouvelles_notifications,
         "d": d,
+        "s": s
     })
     
 def modifier_demande(request, demande_id):
@@ -577,11 +601,25 @@ def modifier_demande(request, demande_id):
     user = Utilisateur.objects.get(id=user_id)
     demande = get_object_or_404(Demande, id=demande_id)
     nombre_nouvelles_notifications = Notifications.objects.filter(receiver=user).filter(is_read=False).count()
-    
+
     if request.method == 'POST':
         form = DemandeForm(request.POST, instance=demande)
         if form.is_valid():
             form.save()
+            nouvelle_notification = Notifications(
+                receiver=Utilisateur.objects.get(profil__id=1),
+                message=f"{'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} a modifié sa demande du {demande.date_formulation.strftime('%d-%m-%Y à %H:%M:%S')} !",
+                date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
+            )
+            nouvelle_notification.save()
+            if demande.agent:
+                nouvelle_notification = Notifications(
+                    receiver=demande.agent,
+                    message=f"{'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} a modifié sa demande du {demande.date_formulation.strftime('%d-%m-%Y à %H:%M:%S')} !",
+                    date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
+                )
+                nouvelle_notification.save()
+            request.session["success"] = "La modification s'est bien déroulée"
             return redirect('consulter_demande', id=demande.id)  # Redirige vers la page de consultation
     else:
         form = DemandeForm(instance=demande)
@@ -596,8 +634,27 @@ def modifier_demande(request, demande_id):
         })
 
 def supprimer_demande(request, id):
+    user_id = request.session.get('user_id', None)
+    error = request.session.pop('error', None)
+    success = request.session.pop('success', None)
+    if not user_id:
+        return redirect('/login')
+    user = Utilisateur.objects.get(id=user_id)
     d = Demande.objects.get(id=id)
     d.delete()
+    nouvelle_notification = Notifications(
+        receiver=Utilisateur.objects.get(profil__id=1),
+        message=f"{'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} a supprimé sa demande du {d.date_formulation.strftime('%d-%m-%Y à %H:%M:%S')} !",
+        date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
+    )
+    nouvelle_notification.save()
+    if d.agent:
+        nouvelle_notification = Notifications(
+            receiver=d.agent,
+            message=f"{'Mr ' if user.sexe else 'Mme '}{user.nom} {user.prenom} a supprimé sa demande du {d.date_formulation.strftime('%d-%m-%Y à %H:%M:%S')} !",
+            date_notification=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()),
+        )
+        nouvelle_notification.save()
     request.session["success"] = "La demande a bien été supprimée !!"
     return redirect("/chef_agence/dashboard")
 

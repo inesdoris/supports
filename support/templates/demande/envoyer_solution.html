@@ -15,11 +15,11 @@ Envoyer Solution
         <input type="hidden" name="demande_id" value="{{ demande.id }}">
         <div class="mb-3">
             <label for="solution" class="form-label">Solution</label>
-            <textarea class="form-control" id="solution" name="solution" rows="3">{{ solution }}</textarea>
+            <textarea readonly class="form-control" id="solution" name="solution" rows="3">{{ traitement.solution }}</textarea>
         </div>
         <div class="mb-3">
             <label for="chef_agent" class="form-label">Chef Agence</label>
-            <input type="text" class="form-control" id="chef_agent" name="chef_agent" value="{{ chef_agent }}">
+            <input readonly type="text" class="form-control" id="chef_agent" name="chef_agent" value="{{ demande.demandeur }}">
         </div>
         <button type="submit" class="btn btn-primary">Envoyer</button>
     </form>

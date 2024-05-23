@@ -1,5 +1,8 @@
 from django.db import models
+
+from .enums import EtatDemande
 from .utils import *
+import django
 
 
 # Create your models here.
@@ -31,13 +34,9 @@ class Utilisateur(models.Model):
 
     def true_pass(self):
         return dechiffrement(self.password)
-    
+
     def __str__(self):
         return f"{self.prenom} {self.nom}"
-
-
-class EtatDemande(models.Model):
-    libelle = models.CharField(max_length=100)
 
 
 class CategorieService(models.Model):
@@ -47,18 +46,20 @@ class CategorieService(models.Model):
 class Service(models.Model):
     libelle = models.CharField(max_length=100)
     categorie = models.ForeignKey(CategorieService, on_delete=models.CASCADE, null=True, blank=False)
-    
+
     def __str__(self):
         return f"{self.libelle}"
 
 
 class Demande(models.Model):
     description = models.CharField(max_length=150)
-    etat = models.ForeignKey(EtatDemande, on_delete=models.CASCADE)
+    etat = models.CharField(choices=[(status.value, status.name) for status in EtatDemande], default=EtatDemande.SENT, max_length=20)
     demandeur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True)
     date_formulation = models.DateTimeField(auto_now_add=True)
-    agent = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, related_name='assigned_demandes', null=True, blank=True)
+    agent = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, related_name='assigned_demandes', null=True,
+                              blank=True)
+
 
 class MessageDemande(models.Model):
     contenu = models.CharField(max_length=200)
