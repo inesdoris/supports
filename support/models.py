@@ -1,5 +1,6 @@
 from django.db import models
 from .utils import *
+from django.utils import timezone
 
 
 # Create your models here.
@@ -57,25 +58,25 @@ class Demande(models.Model):
     etat = models.ForeignKey(EtatDemande, on_delete=models.CASCADE)
     demandeur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True)
-    date_formulation = models.DateTimeField(auto_now_add=True)
+    date_formulation = models.DateTimeField(default=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()))
     agent = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, related_name='assigned_demandes', null=True, blank=True)
 
 class MessageDemande(models.Model):
     contenu = models.CharField(max_length=200)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
     demande = models.ForeignKey(Demande, on_delete=models.CASCADE)
-    date_envoi = models.DateTimeField(auto_now_add=True)
+    date_envoi = models.DateTimeField(default=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()))
 
 
 class Traiter(models.Model):
     demande = models.ForeignKey(Demande, on_delete=models.CASCADE)
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, default=True)
     solution = models.CharField(max_length=200, default=True)
-    date_traitement = models.DateTimeField(auto_now_add=True)
+    date_traitement = models.DateTimeField(default=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()))
 
 
 class Notifications(models.Model):
     message = models.CharField(max_length=200)
     receiver = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
-    date_notification = models.DateTimeField(auto_now_add=True)
+    date_notification = models.DateTimeField(default=timezone.localtime(timezone.now(), timezone=timezone.get_current_timezone()))
     is_read = models.BooleanField(default=False)
